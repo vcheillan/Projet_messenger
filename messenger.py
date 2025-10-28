@@ -1,5 +1,5 @@
 from datetime import datetime
-import random as rd 
+import random 
 
 server = {
     'users': [
@@ -32,10 +32,12 @@ def choix():
     choice = input('Select an option: ')
     if choice == 'x':
         print('Bye!')
+        choix()
         #menu_principal(choice)
     elif choice == 'u':
         for dico in server['users']:
             print(dico)
+        choix()
         # menu_principal(choice)
             
     elif choice == 'g':
@@ -51,15 +53,19 @@ def choix():
                     break
                 else:
                     print('This group doesnt exist')
+        choix()
     elif choice == 'a':
         utilisateur = input( 'Name : ')
-        
+        id = random.choice(Availables_id)
         server['users'].append({'id': id, 'name' : utilisateur})
-
-
-
+        Availables_id.pop(id)
+        choix()
         
+
+
+
+    
 
     else:
         print('Unknown option:', choice)
-choix()
+
