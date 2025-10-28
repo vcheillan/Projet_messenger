@@ -1,4 +1,5 @@
 from datetime import datetime
+import random as rd 
 
 server = {
     'users': [
@@ -18,17 +19,47 @@ server = {
         }
     ]
 }
+liste_id = [dico['id'] for dico in server['users']]
+Availables_id = [ i for i in range(1000) if i not in liste_id]
+def menu_principal(choice):
+    MP = input('Do you want to go to the main menu ? ')
+    if MP == 'Yes':
+        choice = input('Select an option')
+    
+def choix():
+    print('=== Messenger ===')
+    print('x. Leave. u. g')
+    choice = input('Select an option: ')
+    if choice == 'x':
+        print('Bye!')
+        #menu_principal(choice)
+    elif choice == 'u':
+        for dico in server['users']:
+            print(dico)
+        # menu_principal(choice)
+            
+    elif choice == 'g':
+        for dico in server['channels']:
+            print(dico['name'])
+        number = input ('Select a specific group : ')
+        if number == 'NAN':
+            print ('Okay bro')
+        else:
+            for dico in server['messages']:
+                if dico['channel'] == int(number) :
+                    print(dico['content'])
+                    break
+                else:
+                    print('This group doesnt exist')
+    elif choice == 'a':
+        utilisateur = input( 'Name : ')
+        
+        server['users'].append({'id': id, 'name' : utilisateur})
 
-print('=== Messenger ===')
-print('x. Leave')
-choice = input('Select an option: ')
-if choice == 'x':
-    print('Bye!')
-elif choice == 'u':
-    for dico in server['users']:
-        print(dico['name'])
-elif choice == 'g':
-    for dico in server['channels']:
-        print(dico['name'])
-else:
-    print('Unknown option:', choice)
+
+
+        
+
+    else:
+        print('Unknown option:', choice)
+choix()
