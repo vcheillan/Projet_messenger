@@ -27,9 +27,9 @@ def indice(nom):
         if dico['name']==nom:
             return dico['id']
 liste_id = [dico['id'] for dico in server['users']]
-#Availables_id = [ i for i in range(1000) if i not in liste_id]
+
 liste_idg = [dico['id'] for dico in server['channels']]
-#Availables_idg = [ i for i in range(1000) if i not in liste_id]
+
 liste = [dico['name'] for dico in server['users']]
 
 def generer_id(L):
@@ -137,7 +137,7 @@ def retour_menu():
 
 def choix():
     print('=== Messenger ===')
-    print('x. Leave. u. g. au. ag. apu.')
+    print('Sortie du service : Leave  \nAffichage utilisateurs : u \nAffichage messages groupe : g \nAjout utilisateur : au \nAjout Groupe : ag \nAjout plusieurs utilisateurs : apu')
     choice = input('Select an option: ')
     if choice == 'x':
         print('Bye!')
