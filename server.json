@@ -15,6 +15,22 @@
     {
       "id": 43,
       "name": "Victor"
+    },
+    {
+      "id": 44,
+      "name": "Alfred"
+    },
+    {
+      "id": 45,
+      "name": "Clément"
+    },
+    {
+      "id": 46,
+      "name": "Celestin"
+    },
+    {
+      "id": 47,
+      "name": "Sophia"
     }
   ],
   "channels": [
@@ -32,6 +48,30 @@
       "member_ids": [
         43,
         42
+      ]
+    },
+    {
+      "id": 14,
+      "name": "Mines",
+      "member_ids": [
+        44,
+        45
+      ]
+    },
+    {
+      "id": 15,
+      "name": "CS",
+      "member_ids": [
+        46,
+        47
+      ]
+    },
+    {
+      "id": 15,
+      "name": "CS",
+      "member_ids": [
+        46,
+        47
       ]
     }
   ],
