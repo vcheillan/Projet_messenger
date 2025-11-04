@@ -1,0 +1,47 @@
+{
+  "users": [
+    {
+      "id": 41,
+      "name": "Alice"
+    },
+    {
+      "id": 23,
+      "name": "Bob"
+    },
+    {
+      "id": 42,
+      "name": "Valentin"
+    },
+    {
+      "id": 43,
+      "name": "Victor"
+    }
+  ],
+  "channels": [
+    {
+      "id": 12,
+      "name": "Town square",
+      "member_ids": [
+        41,
+        23
+      ]
+    },
+    {
+      "id": 13,
+      "name": "Amis",
+      "member_ids": [
+        43,
+        42
+      ]
+    }
+  ],
+  "messages": [
+    {
+      "id": 18,
+      "reception_date": "NAO",
+      "sender_id": 41,
+      "channel": 12,
+      "content": "Hi 👋"
+    }
+  ]
+}

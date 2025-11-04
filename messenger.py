@@ -2,25 +2,14 @@ from datetime import datetime
 import random 
 import json
 
-server = {
-    'users': [
-        {'id': 41, 'name': 'Alice'},
-        {'id': 23, 'name': 'Bob'}
-    ],
-    'channels': [
-        {'id': 12, 'name': 'Town square', 'member_ids': [41, 23]}
-    ],
-    'messages': [
-        {
-            'id': 18,
-            'reception_date': datetime.now(),
-            'sender_id': 41,
-            'channel': 12,
-            'content': 'Hi 👋'
-        }
-    ]
-}
-#server = json.loads('basic_server')
+
+
+with open("server.json", "r", encoding = "utf-8") as f:
+    server = json.load(f)
+
+def save_server():
+     with open("server.json","w", encoding = "utf-8") as f:
+          json.dump(server, f, ensure_ascii=False, indent=2)
 
 def indice(nom):
     for dico in server['users']:
@@ -88,6 +77,7 @@ def ajout_utilisateur():
          redirection()
     id = generer_id(liste_id)
     server['users'].append({'id': id, 'name' : utilisateur})
+    save_server()
     liste.append(utilisateur)
     liste_id.append(id)
     Bol = input('Do you want to continue ? :')
@@ -102,6 +92,7 @@ def ajout_plusieurs_utilisateurs():
             server['users'].append({'id': id, 'name' : user})
             liste.append(user)
             liste_id.append(id)
+            save_server()
      Bol = input('Do you want to continue ? :')
      if Bol == 'Yes':
             redirection()
@@ -124,8 +115,9 @@ def ajout_groupe():
     nL = []
     for x in user_corr:
         nL.append(indice(x))
-    ng = {'id': id_group, 'name' : group_name, 'members_ids' : nL}    
+    ng = {'id': id_group, 'name' : group_name, 'member_ids' : nL}  
     server['channels'].append(ng)
+    save_server()  
     #Availables_idg.pop(id_group)
     print(ng)
     Bol = input('Do you want to continue ? :')
