@@ -15,6 +15,12 @@ def indice(nom):
     for dico in server['users']:
         if dico['name']==nom:
             return dico['id']
+
+def indice_g(groupe):
+    for dico in server['channels']:
+        if dico['name']==groupe:
+            return dico['id']
+
 liste_id = [dico['id'] for dico in server['users']]
 
 liste_idg = [dico['id'] for dico in server['channels']]
@@ -23,11 +29,6 @@ liste = [dico['name'] for dico in server['users']]
 
 def generer_id(L):
      return max(L)+1
-
-def menu_principal(choice):
-    MP = input('Do you want to go to the main menu ? ')
-    if MP == 'Yes':
-        choice = input('Select an option')
 
 def redirection():
     print('Redirections possibles : \nAffichage utilisateur : Au,  \nAffichage messages groupe : Amg,  \nAjouter un utilisateur : Aju,  \nAjouter un groupe : Ajg, \nAjouter plusieurs utilisateurs : Ajus  \nRetour menu principal : RM')
@@ -48,26 +49,22 @@ def redirection():
 def affiche_utilisateurs():
     for dico in server['users']:
             print(dico)
-    Bol = input('Do you want to continue ? :')
-    if Bol == 'Yes':
-            redirection()
+    
 
 def afficher_messages_groupes():
     for dico in server['channels']:
             print(dico['name'])
-    number = input ('Select a specific group : ')
-    if number == 'NAN':
-        print ('Okay bro')
+    name_g = input ('Select a specific group : ')
+    number = indice_g(name_g)
+    if number not in liste_idg:
+        print ('Ce groupe nexiste pas')
     else:
         for dico in server['messages']:
-            if dico['channel'] == int(number) :
+            if dico['channel'] == number :
                 print(dico['content'])
                 break
-            else:
-                print('This group doesnt exist')
-    Bol = input('Do you want to continue ? :')
-    if Bol == 'Yes':
-            redirection()
+            
+    
     
 
 def ajout_utilisateur():
@@ -80,9 +77,7 @@ def ajout_utilisateur():
     save_server()
     liste.append(utilisateur)
     liste_id.append(id)
-    Bol = input('Do you want to continue ? :')
-    if Bol == 'Yes':
-            redirection()
+    
 
 def ajout_plusieurs_utilisateurs():
      liste_noms = input('Names : ').split(',')
@@ -93,9 +88,7 @@ def ajout_plusieurs_utilisateurs():
             liste.append(user)
             liste_id.append(id)
             save_server()
-     Bol = input('Do you want to continue ? :')
-     if Bol == 'Yes':
-            redirection()
+     
 
 def ajout_groupe():
     group_name = input( 'Name : ')
@@ -107,11 +100,13 @@ def ajout_groupe():
          if user not in liste:
               N_ut.append(user)
     if len(N_ut) == 1:
-         print(f'{N_ut} ne fait pas parti des utilisateurs')
+         print(f'{N_ut} ne fait pas parti des utilisateurs, il faut l ajouter :')
          ajout_utilisateur()
+         ajout_groupe()
     elif len(N_ut) > 1:
-         print(f'{N_ut} ne font pas parti des utilisateurs')
-         ajout_plusieurs_utilisateurs()         
+         print(f'{N_ut} ne font pas parti des utilisateurs, il faut les ajouter :')
+         ajout_plusieurs_utilisateurs() 
+         ajout_groupe()        
     nL = []
     for x in user_corr:
         nL.append(indice(x))
@@ -120,9 +115,7 @@ def ajout_groupe():
     save_server()  
     #Availables_idg.pop(id_group)
     print(ng)
-    Bol = input('Do you want to continue ? :')
-    if Bol == 'Yes':
-            redirection()
+    
 
 def retour_menu():
     choix()
@@ -137,20 +130,35 @@ def choix():
         
     elif choice == 'u':
         affiche_utilisateurs()
+        Bol = input('Voulez-vous continuer ? :')
+        if Bol == 'Oui':
+            redirection()
         
        
     elif choice == 'g':
         afficher_messages_groupes()
+        Bol = input('Voulez-vous continuer ? :')
+        if Bol == 'Oui':
+            redirection()
         
         
     elif choice == 'au':
         ajout_utilisateur()
+        Bol = input('Voulez-vous continuer ? :')
+        if Bol == 'Oui':
+            redirection()
 
     elif choice == 'apu':
-         ajout_plusieurs_utilisateurs()   
+         ajout_plusieurs_utilisateurs() 
+         Bol = input('Voulez-vous continuer ? :')
+         if Bol == 'Oui':
+            redirection()  
         
     elif choice == 'ag':
         ajout_groupe()
+        Bol = input('Voulez-vous continuer ? :')
+        if Bol == 'Oui':
+            redirection()
             
     else:
         print('Unknown option:', choice)
