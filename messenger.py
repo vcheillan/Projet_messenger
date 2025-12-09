@@ -70,7 +70,7 @@ def afficher_messages_groupes():
 def ajout_utilisateur():
     utilisateur = input( 'Name : ')
     if utilisateur in liste:
-         print(f'utilisateur : {utilisateur} déja dans le serveur')
+         print(f'utilisateur : {utilisateur} est déja dans le serveur')
          redirection()
     id = generer_id(liste_id)
     server['users'].append({'id': id, 'name' : utilisateur})
