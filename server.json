@@ -77,6 +77,14 @@
         46,
         47
       ]
+    },
+    {
+      "id": 16,
+      "name": "Piche ",
+      "member_ids": [
+        41,
+        42
+      ]
     }
   ],
   "messages": [
@@ -85,7 +93,31 @@
       "reception_date": "NAO",
       "sender_id": 41,
       "channel": 12,
-      "content": "Hi 👋"
+      "content": [
+        "Hi 👋",
+        "Piche"
+      ]
+    },
+    {
+      "id": 19,
+      "reception_date": "NAO",
+      "sender_id": 42,
+      "channel": 16,
+      "content": " La chienneté"
+    },
+    {
+      "id": 20,
+      "reception_date": "2025-12-09 15:44:57.218825",
+      "sender_id": 42,
+      "channel": 13,
+      "content": "Bonjour les amis, comment allez-vous ?"
+    },
+    {
+      "id": 21,
+      "reception_date": "09/12/2025 16:26",
+      "sender_id": 42,
+      "channel": 16,
+      "content": " Rebonjour, je n'ai pas eu de réponses..."
     }
   ]
 }

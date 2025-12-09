@@ -4,11 +4,11 @@ import json
 
 
 
-with open("server.json", "r", encoding = "utf-8") as f:
+with open("server.json", "r", encoding = "utf-8") as f: #Lecture du fichier uniquement 
     server = json.load(f)
 
 def save_server():
-     with open("server.json","w", encoding = "utf-8") as f:
+     with open("server.json","w", encoding = "utf-8") as f: #écriture du fichier --> modification 
           json.dump(server, f, ensure_ascii=False, indent=2)
 
 def indice(nom):
@@ -25,13 +25,15 @@ liste_id = [dico['id'] for dico in server['users']]
 
 liste_idg = [dico['id'] for dico in server['channels']]
 
+liste_idm = [dico['id'] for dico in server['messages']]
+
 liste = [dico['name'] for dico in server['users']]
 
 def generer_id(L):
      return max(L)+1
 
 def redirection():
-    print('Redirections possibles : \nAffichage utilisateur : Au,  \nAffichage messages groupe : Amg,  \nAjouter un utilisateur : Aju,  \nAjouter un groupe : Ajg, \nAjouter plusieurs utilisateurs : Ajus  \nRetour menu principal : RM')
+    print('Redirections possibles : \nAffichage utilisateur : Au\n  \nAffichage messages groupe : Amg\n  \nAjouter un utilisateur : Aju\n  \nAjouter un groupe : Ajg\n \nAjouter plusieurs utilisateurs : Ajus\n  \nRetour menu principal : RM\n \nEcriture message : em')
     choix = input('Choix : ')
     if choix == 'Au':
         affiche_utilisateurs()
@@ -43,6 +45,8 @@ def redirection():
         ajout_groupe()
     elif choix == 'Ajus':
          ajout_plusieurs_utilisateurs()
+    elif choix =='em':
+         ecriture_message()
     else:
         retour_menu()
 
@@ -89,6 +93,40 @@ def ajout_plusieurs_utilisateurs():
             liste_id.append(id)
             save_server()
      
+def ajout_groupe_et_messagerie_privés():
+    first_user = input ('Votre prénom : ') 
+    
+    id_group = generer_id(liste_idg)
+    autre_utilisateur = input( 'Personne avec qui vous voulez parler : ')
+    N_ut = []
+    if autre_utilisateur not in liste:
+        N_ut.append(autre_utilisateur)
+    if len(N_ut) == 1:
+        print(f'{N_ut} ne fait pas parti des utilisateurs, vous ne pouvez pas discuter avec lui/elle')
+        redirection()
+    nL = [indice(autre_utilisateur), indice(first_user)]
+    cpt =0
+    for dico in server['channels']:
+        if dico['member_ids'] == nL or dico['member_ids'] == [indice(first_user),indice(autre_utilisateur)]:
+            cpt+=1
+            id_pour_mess = dico['id']
+            
+    if cpt ==0 :  
+        ng = {'id': id_group, 'name' : group_name, 'member_ids' : nL }  
+        server['channels'].append(ng)
+        idm = generer_id(liste_idm)
+        group_name = input( 'Nom du groupe : ')
+        messages = input('Discussion ouverte')
+        new_messagerie = {'id' : idm, 'reception_date' : str(datetime.now().strftime("%d/%m/%Y %H:%M")), 'sender_id':indice(first_user), 'channel':id_group, 'content' : messages }
+    else :
+        idm = generer_id(liste_idm)
+        messages = input('Discussion ouverte')
+        new_messagerie = {'id' : idm, 'reception_date' : str(datetime.now().strftime("%d/%m/%Y %H:%M")), 'sender_id':indice(first_user), 'channel':id_pour_mess, 'content' : messages }
+
+    server['messages'].append(new_messagerie)
+    save_server()
+    
+  
 
 def ajout_groupe():
     group_name = input( 'Name : ')
@@ -115,6 +153,28 @@ def ajout_groupe():
     save_server()  
     #Availables_idg.pop(id_group)
     print(ng)
+
+def ecriture_message():
+    privé = input('Souhaitez vous parler en privé à un autre utilisateur (Oui/Non) ? :')
+    if privé == 'Non':
+        fuser_name = input('Votre prénom : ')
+        print('Groupe(s) disponibles :')
+        for group in server['channels']:
+            if indice(fuser_name) in group['member_ids']:
+                print(group['name'])
+        group_name = input('Quel est le groupe choisi ? :')
+        indice_groupe = indice_g(group_name)
+        idmes = generer_id(liste_idm)
+        message = input('Discussion ouverte :' )
+        server['messages'].append({'id' : idmes, 
+                                   'reception_date' : str(datetime.now().strftime("%d/%m/%Y %H:%M")), 
+                                   'sender_id':indice(fuser_name), 
+                                   'channel':indice_groupe, 
+                                   'content' : message })
+    else :
+        ajout_groupe_et_messagerie_privés()
+
+    save_server() 
     
 
 def retour_menu():
@@ -122,12 +182,10 @@ def retour_menu():
 
 def choix():
     print('=== Messenger ===')
-    print('Sortie du service : Leave  \nAffichage utilisateurs : u \nAffichage messages groupe : g \nAjout utilisateur : au \nAjout Groupe : ag \nAjout plusieurs utilisateurs : apu')
+    print('Sortie du service : Leave \n \nAffichage utilisateurs : u\n \nAffichage messages groupe : g\n \nAjout utilisateur : au\n \nAjout Groupe : ag\n \nAjout plusieurs utilisateurs : apu\n \nEcrire un message : em\n \n')
     choice = input('Select an option: ')
     if choice == 'x':
         print('Bye!')
-        
-        
     elif choice == 'u':
         affiche_utilisateurs()
         Bol = input('Voulez-vous continuer ? :')
@@ -159,6 +217,12 @@ def choix():
         Bol = input('Voulez-vous continuer ? :')
         if Bol == 'Oui':
             redirection()
+    elif choice == 'em':
+        ecriture_message()
+        Bol = input('Voulez-vous continuer ? :')
+        if Bol == 'Oui':
+            redirection()
+
             
     else:
         print('Unknown option:', choice)
