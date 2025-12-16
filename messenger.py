@@ -1,24 +1,21 @@
 from datetime import datetime
 import random 
 import json
+import os
 
 class User:
-    def __init__(self, name: str, id: str): 
+    def __init__(self, name: str, id: str): #crétion de la classe User qui contient tous les élements du dico users
         self.name = name
         self.id = id
 
-
-
 class Channel:
-    def __init__(self, name: str, idg: int,members : list): 
+    def __init__(self, name: str, idg: int,members : list): #crétion de la classe Channel qui contient tous les élements du dico channels
         self.name = name
         self.idg = idg
         self.members = members
 
-
-
 class Message:
-    def __init__(self, channel: int, id: int,content : list[str], time : str, sender : int): 
+    def __init__(self, channel: int, id: int,content : list[str], time : str, sender : int): #crétion de la classe Message qui contient tous les élements du dico messages
         self.channel = channel
         self.id = id
         self.content = content
@@ -30,15 +27,15 @@ server = { 'users':[], 'channels' : [], 'messages' : []}
 
 with open("server.json", "r", encoding = "utf-8") as f: #Lecture du fichier uniquement 
     server1 = json.load(f)
-for user in server1['users']:
-    server['users'].append(User(user['name'],user['id']))
+for user in server1['users']: #conversion du server json en un server local utilisant les classes
+    server['users'].append(User(user['name'],user['id'])) 
 for group in server1['channels']:
     server['channels'].append(Channel(group['name'], group['id'], group['member_ids']))
 for message in server1['messages']:
     server['messages'].append(Message(message['channel'],message['id'],message['content'], message['reception_date'], message['sender_id']))
 
-def save_server():
-     new_server = { 'users':[], 'channels' : [], 'messages' : []}
+def save_server(): #sauvegarde du server
+     new_server = { 'users':[], 'channels' : [], 'messages' : []} #conversion inverse afin de changer les classes locales en des dictionnaires
      for user in server['users']:
          new_server['users'].append({'id' : user.id, 'name' : user.name})
      for channel in server['channels']:
@@ -52,12 +49,16 @@ def save_server():
      with open("server.json","w", encoding = "utf-8") as f: #écriture du fichier --> modification 
           json.dump(new_server, f, ensure_ascii=False, indent=2)
 
-def indice(nom):
+def indice(nom : str): #convertit un nom d'utilisateur en indice utilisateur 
     for user in server['users']:
         if user.name==nom:
             return user.id
 
-def indice_g(groupe):
+def indice_vers_nom(indice : int):
+    for user in server['users']:
+        if user.id == indice:
+            return user.name
+def indice_g(groupe):#convertit un nom de groupe en indice de groupe 
     for group in server['channels']:
         if group.name == groupe:
             return groupe.idg
@@ -69,11 +70,13 @@ liste_idg = [group.idg for group in server['channels']]
 liste_idm = [message.id for message in server['messages']]
 
 liste = [user.name for user in server['users']]
+def clear_screen():
+    os.system('cls' if os.name == 'nt' else 'clear')
 
-def generer_id(L : list[int]):
+def generer_id(L : list[int]): #génère un identifiant user
      return max(L)+1
 
-def redirection():
+def redirection(): #redirige vers le menu principal
     print('Redirections possibles : \nAffichage utilisateur : Au\n  \nAffichage messages groupe : Amg\n  \nAjouter un utilisateur : Aju\n  \nAjouter un groupe : Ajg\n \nAjouter plusieurs utilisateurs : Ajus\n  \nRetour menu principal : RM\n \nEcriture message : em')
     choix = input('Choix : ')
     if choix == 'Au':
@@ -91,14 +94,16 @@ def redirection():
     else:
         retour_menu()
 
-def affiche_utilisateurs():
+def affiche_utilisateurs(): #affichage de tous les utilisateurs de la classe User
+    clear_screen()
     for user in server['users']:
         print(user.name)
     
-def afficher_messages_groupes():
+def afficher_messages_groupes(): #affichage des messages d'un groupe sélectionné
+    clear_screen()
     for group in server['channels']:
             print(group.name)
-    name_g = input ('Select a specific group : ')
+    name_g = input ('Choisissez un groupe : ')
     number = indice_g(name_g)
     if number not in liste_idg:
         print ('Ce groupe nexiste pas')
@@ -109,6 +114,7 @@ def afficher_messages_groupes():
                 break
             
 def ajout_utilisateur():
+    clear_screen()
     nom = input( 'Name : ')
     if nom in liste:
          print(f'utilisateur : {nom} est déja dans le serveur')
@@ -120,6 +126,7 @@ def ajout_utilisateur():
     liste_id.append(id)
     
 def ajout_plusieurs_utilisateurs():
+     clear_screen()
      liste_noms = input('Names : ').split(',')
      liste_noms_corr = [ user.strip() for user in liste_noms]
      for nom in liste_noms_corr : 
@@ -130,25 +137,27 @@ def ajout_plusieurs_utilisateurs():
             save_server()
      
 def continuer_messagerie(groupe, user):
-    choixd = input('Voulez-vous continuer à discuter ? (Oui/Non)').split()
+    choixd = input('Voulez-vous continuer à discuter ? (Oui/Non) :')
+    print(choixd)
     if choixd == 'Oui':
-        for dico_groupe in server['messages']:
-            if dico_groupe['channel'] == groupe:
-                print(dico_groupe['content'])
-        message = input('Discussion ouverte')
+        for message in server['messages']:
+            if message.channel == groupe:
+                print(message.time, indice_vers_nom(message.sender))
+                print('')
+                print(message.content)
+                print('')
+                print('')
+        message = input('message :')
         #server['messages'].append()
         idm = generer_id(liste_idm)
-        new_messagerie = {'id' : idm, 
-                          'reception_date' : str(datetime.now().strftime("%d/%m/%Y %H:%M")), 
-                          'sender_id':indice(user), 
-                          'channel':groupe, 
-                          'content' : message }
+        new_messagerie = Message(groupe, idm, message,str(datetime.now().strftime("%d/%m/%Y %H:%M")),indice(user))
         server['messages'].append(new_messagerie)
-        continuer_messagerie()
+        continuer_messagerie(groupe,user)
     else:
         redirection()
 
 def ajout_groupe_et_messagerie_privés():
+    clear_screen()
     nom1 = input ('Votre prénom : ') 
     nom2 = input( 'Personne avec qui vous voulez parler : ')
     N_ut = []
@@ -163,11 +172,11 @@ def ajout_groupe_et_messagerie_privés():
         if group.members == nL or group.members == [indice(nom1),indice(nom2)]:
             cpt+=1
             id_pour_mess = group.idg
-    if cpt ==0 : 
+    if cpt ==0 : #si le groupe n'existe pas, on le crée
         id_group = generer_id(liste_idg) 
         idm = generer_id(liste_idm)
         group_name = input( 'Nom du groupe : ')
-        messages = input('Discussion ouverte')
+        messages = input('message : ')
         new_group = Channel(group_name,id_group,nL)
         new_messagerie = Message(id_group, idm, [],str(datetime.now().strftime("%d/%m/%Y %H:%M")),indice(nom1))
         server['messages'].append(new_messagerie)
@@ -175,13 +184,14 @@ def ajout_groupe_et_messagerie_privés():
         continuer_messagerie(id_group,nom1)
     else :
         idm = generer_id(liste_idm)
-        messages = input('Discussion ouverte')
+        messages = input('message : ')
         new_messagerie = Message(id_pour_mess, idm, messages,str(datetime.now().strftime("%d/%m/%Y %H:%M")),indice(nom1))
         server['messages'].append(new_messagerie)
         continuer_messagerie(id_pour_mess,nom1)
     save_server()
     
 def ajout_groupe():
+    clear_screen()
     group_name = input( 'Name : ')
     id_group = generer_id(liste_idg)
     utilisateurs_group = input( 'Liste : ').split(',')
@@ -206,6 +216,7 @@ def ajout_groupe():
     save_server()  
 
 def ecriture_message():
+    clear_screen()
     privé = input('Souhaitez vous parler en privé à un autre utilisateur (Oui/Non) ? :')
     if privé == 'Non':
         fuser_name = input('Votre prénom : ')
@@ -228,24 +239,24 @@ def retour_menu():
     choix()
 
 def choix():
-    print('=== Messenger ===')
-    print('Sortie du service : Leave \n \nAffichage utilisateurs : u\n \nAffichage messages groupe : g\n \nAjout utilisateur : au\n \nAjout Groupe : ag\n \nAjout plusieurs utilisateurs : apu\n \nEcrire un message : em\n \n')
-    choice = input('Select an option: ')
-    if choice == 'x':
-        print('Bye!')
-    elif choice == 'u':
+    print('=== Bienvenue dans le service de messagerie ===')
+    print('Sortie du service : S \n \nAffichage utilisateurs : u\n \nAffichage messages groupe : g\n \nAjout utilisateur : au\n \nAjout Groupe : ag\n \nAjout plusieurs utilisateurs : apu\n \nEcrire un message : em\n \n')
+    choice = input('Sélectionnez une option : ')
+    if choice == 'u':
         affiche_utilisateurs()
         Bol = input('Voulez-vous continuer ? :')
         if Bol == 'Oui':
             redirection()
         
-       
+    elif choice == 'S':
+        print('Sortie du service')
+    
+
     elif choice == 'g':
         afficher_messages_groupes()
         Bol = input('Voulez-vous continuer ? :')
         if Bol == 'Oui':
             redirection()
-        
         
     elif choice == 'au':
         ajout_utilisateur()
@@ -264,14 +275,15 @@ def choix():
         Bol = input('Voulez-vous continuer ? :')
         if Bol == 'Oui':
             redirection()
+
     elif choice == 'em':
         ecriture_message()
         Bol = input('Voulez-vous continuer ? :')
         if Bol == 'Oui':
-            redirection()
+            redirection()  
 
-            
     else:
-        print('Unknown option:', choice)
+        print('Commande inconnue : ', choice)
+        retour_menu()
 
 choix()

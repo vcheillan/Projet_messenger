@@ -93,6 +93,14 @@
         45,
         42
       ]
+    },
+    {
+      "id": 18,
+      "name": "/opt/miniconda3/bin/python /Users/valpro/cours-info/ue12-mines-ap/TP/messenger/messenger.py",
+      "member_ids": [
+        42,
+        null
+      ]
     }
   ],
   "messages": [
@@ -140,6 +148,62 @@
       "sender_id": 42,
       "channel": 17,
       "content": " Hello"
+    },
+    {
+      "id": 24,
+      "reception_date": "16/12/2025 15:56",
+      "sender_id": 42,
+      "channel": 17,
+      "content": "Hello"
+    },
+    {
+      "id": 24,
+      "reception_date": "16/12/2025 15:57",
+      "sender_id": 42,
+      "channel": 17,
+      "content": "Hello"
+    },
+    {
+      "id": 24,
+      "reception_date": "16/12/2025 15:58",
+      "sender_id": 42,
+      "channel": 17,
+      "content": "Hello"
+    },
+    {
+      "id": 24,
+      "reception_date": "16/12/2025 15:59",
+      "sender_id": 42,
+      "channel": 17,
+      "content": "Hello"
+    },
+    {
+      "id": 25,
+      "reception_date": "16/12/2025 16:16",
+      "sender_id": null,
+      "channel": 18,
+      "content": []
+    },
+    {
+      "id": 26,
+      "reception_date": "16/12/2025 16:20",
+      "sender_id": 45,
+      "channel": 17,
+      "content": "Hello"
+    },
+    {
+      "id": 26,
+      "reception_date": "16/12/2025 16:20",
+      "sender_id": 45,
+      "channel": 17,
+      "content": "ça va ?"
+    },
+    {
+      "id": 26,
+      "reception_date": "16/12/2025 16:20",
+      "sender_id": 45,
+      "channel": 17,
+      "content": "Répond moi !"
     }
   ]
 }
