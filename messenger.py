@@ -3,36 +3,74 @@ import random
 import json
 
 class User:
-    def __init__(self, name: str, firstname: str): 
+    def __init__(self, name: str, id: str): 
         self.name = name
-        self.firstname = firstname
+        self.id = id
+
+
+
+class Channel:
+    def __init__(self, name: str, idg: int,members : list): 
+        self.name = name
+        self.idg = idg
+        self.members = members
+
+
+
+class Message:
+    def __init__(self, channel: int, id: int,content : list[str], time : str, sender : int): 
+        self.channel = channel
+        self.id = id
+        self.content = content
+        self.time = time
+        self.sender = sender
+
+
+server = { 'users':[], 'channels' : [], 'messages' : []}
 
 with open("server.json", "r", encoding = "utf-8") as f: #Lecture du fichier uniquement 
-    server = json.load(f)
+    server1 = json.load(f)
+for user in server1['users']:
+    server['users'].append(User(user['name'],user['id']))
+for group in server1['channels']:
+    server['channels'].append(Channel(group['name'], group['id'], group['member_ids']))
+for message in server1['messages']:
+    server['messages'].append(Message(message['channel'],message['id'],message['content'], message['reception_date'], message['sender_id']))
 
 def save_server():
+     new_server = { 'users':[], 'channels' : [], 'messages' : []}
+     for user in server['users']:
+         new_server['users'].append({'id' : user.id, 'name' : user.name})
+     for channel in server['channels']:
+         new_server['channels'].append({'id' : channel.idg, 'name' : channel.name, 'member_ids' : channel.members})
+     for message in server['messages']:
+         new_server['messages'].append({'id' : message.id, 
+                                        'reception_date' : message.time, 
+                                        'sender_id' : message.sender, 
+                                        'channel' : message.channel,
+                                        'content' : message.content})
      with open("server.json","w", encoding = "utf-8") as f: #écriture du fichier --> modification 
-          json.dump(server, f, ensure_ascii=False, indent=2)
+          json.dump(new_server, f, ensure_ascii=False, indent=2)
 
 def indice(nom):
-    for dico in server['users']:
-        if dico['name']==nom:
-            return dico['id']
+    for user in server['users']:
+        if user.name==nom:
+            return user.id
 
 def indice_g(groupe):
-    for dico in server['channels']:
-        if dico['name']==groupe:
-            return dico['id']
+    for group in server['channels']:
+        if group.name == groupe:
+            return groupe.idg
 
-liste_id = [dico['id'] for dico in server['users']]
+liste_id = [user.id for user in server['users']]
 
-liste_idg = [dico['id'] for dico in server['channels']]
+liste_idg = [group.idg for group in server['channels']]
 
-liste_idm = [dico['id'] for dico in server['messages']]
+liste_idm = [message.id for message in server['messages']]
 
-liste = [dico['name'] for dico in server['users']]
+liste = [user.name for user in server['users']]
 
-def generer_id(L):
+def generer_id(L : list[int]):
      return max(L)+1
 
 def redirection():
@@ -54,40 +92,40 @@ def redirection():
         retour_menu()
 
 def affiche_utilisateurs():
-    for dico in server['users']:
-            print(dico)
+    for user in server['users']:
+        print(user.name)
     
 def afficher_messages_groupes():
-    for dico in server['channels']:
-            print(dico['name'])
+    for group in server['channels']:
+            print(group.name)
     name_g = input ('Select a specific group : ')
     number = indice_g(name_g)
     if number not in liste_idg:
         print ('Ce groupe nexiste pas')
     else:
-        for dico in server['messages']:
-            if dico['channel'] == number :
-                print(dico['content'])
+        for message in server['messages']:
+            if message.channel == number :
+                print(message.content)
                 break
             
 def ajout_utilisateur():
-    utilisateur = input( 'Name : ')
-    if utilisateur in liste:
-         print(f'utilisateur : {utilisateur} est déja dans le serveur')
+    nom = input( 'Name : ')
+    if nom in liste:
+         print(f'utilisateur : {nom} est déja dans le serveur')
          redirection()
     id = generer_id(liste_id)
-    server['users'].append({'id': id, 'name' : utilisateur})
+    user = User(nom, id)
+    server['users'].append(user)
     save_server()
-    liste.append(utilisateur)
     liste_id.append(id)
     
 def ajout_plusieurs_utilisateurs():
      liste_noms = input('Names : ').split(',')
      liste_noms_corr = [ user.strip() for user in liste_noms]
-     for user in liste_noms_corr : 
+     for nom in liste_noms_corr : 
             id = generer_id(liste_id)
-            server['users'].append({'id': id, 'name' : user})
-            liste.append(user)
+            user = User(nom,id)
+            server['users'].append(user)
             liste_id.append(id)
             save_server()
      
@@ -111,46 +149,36 @@ def continuer_messagerie(groupe, user):
         redirection()
 
 def ajout_groupe_et_messagerie_privés():
-    first_user = input ('Votre prénom : ') 
-    autre_utilisateur = input( 'Personne avec qui vous voulez parler : ')
+    nom1 = input ('Votre prénom : ') 
+    nom2 = input( 'Personne avec qui vous voulez parler : ')
     N_ut = []
-    if autre_utilisateur not in liste:
-        N_ut.append(autre_utilisateur)
+    if nom2 not in liste:
+        N_ut.append(nom2)
     if len(N_ut) == 1:
         print(f'{N_ut} ne fait pas parti des utilisateurs, vous ne pouvez pas discuter avec lui/elle')
         redirection()
-    nL = [indice(autre_utilisateur), indice(first_user)]
+    nL = [indice(nom2), indice(nom1)]
     cpt =0
-    for dico in server['channels']:
-        if dico['member_ids'] == nL or dico['member_ids'] == [indice(first_user),indice(autre_utilisateur)]:
+    for group in server['channels']:
+        if group.members == nL or group.members == [indice(nom1),indice(nom2)]:
             cpt+=1
-            id_pour_mess = dico['id']
+            id_pour_mess = group.idg
     if cpt ==0 : 
         id_group = generer_id(liste_idg) 
         idm = generer_id(liste_idm)
         group_name = input( 'Nom du groupe : ')
         messages = input('Discussion ouverte')
-        ng = {'id': id_group, 'name' : group_name, 'member_ids' : nL}
-        server['channels'].append(ng)
-        new_messagerie = {'id' : idm, 
-                          'reception_date' : str(datetime.now().strftime("%d/%m/%Y %H:%M")), 
-                          'sender_id':indice(first_user), 
-                          'channel':id_group, 
-                          'content' : messages }
+        new_group = Channel(group_name,id_group,nL)
+        new_messagerie = Message(id_group, idm, [],str(datetime.now().strftime("%d/%m/%Y %H:%M")),indice(nom1))
         server['messages'].append(new_messagerie)
-        continuer_messagerie(id_group,first_user)
+        server['channels'].append(new_group)
+        continuer_messagerie(id_group,nom1)
     else :
         idm = generer_id(liste_idm)
         messages = input('Discussion ouverte')
-        new_messagerie = {'id' : idm, 
-                          'reception_date' : str(datetime.now().strftime("%d/%m/%Y %H:%M")), 
-                          'sender_id':indice(first_user), 
-                          'channel':id_pour_mess, 
-                          'content' : messages }
+        new_messagerie = Message(id_pour_mess, idm, messages,str(datetime.now().strftime("%d/%m/%Y %H:%M")),indice(nom1))
         server['messages'].append(new_messagerie)
-        continuer_messagerie(id_pour_mess,first_user)
-
-    
+        continuer_messagerie(id_pour_mess,nom1)
     save_server()
     
 def ajout_groupe():
@@ -173,11 +201,9 @@ def ajout_groupe():
     nL = []
     for x in user_corr:
         nL.append(indice(x))
-    ng = {'id': id_group, 'name' : group_name, 'member_ids' : nL}  
-    server['channels'].append(ng)
+    new_group = Channel(group_name,id_group,nL)
+    server['channel'].append(new_group)
     save_server()  
-    #Availables_idg.pop(id_group)
-    print(ng)
 
 def ecriture_message():
     privé = input('Souhaitez vous parler en privé à un autre utilisateur (Oui/Non) ? :')
@@ -185,17 +211,13 @@ def ecriture_message():
         fuser_name = input('Votre prénom : ')
         print('Groupe(s) disponibles :')
         for group in server['channels']:
-            if indice(fuser_name) in group['member_ids']:
-                print(group['name'])
+            if indice(fuser_name) in group.members:
+                print(group.name)
         group_name = input('Quel est le groupe choisi ? :')
         indice_groupe = indice_g(group_name)
         idmes = generer_id(liste_idm)
         message = input('Discussion ouverte :' )
-        server['messages'].append({'id' : idmes, 
-                                   'reception_date' : str(datetime.now().strftime("%d/%m/%Y %H:%M")), 
-                                   'sender_id':indice(fuser_name), 
-                                   'channel':indice_groupe, 
-                                   'content' : message })
+        server['messages'].append(Message(indice_groupe,idmes, message,str(datetime.now().strftime("%d/%m/%Y %H:%M")),indice(fuser_name)))
         continuer_messagerie(indice_groupe,fuser_name)
     else :
         ajout_groupe_et_messagerie_privés()

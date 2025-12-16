@@ -133,6 +133,13 @@
       "sender_id": 42,
       "channel": 17,
       "content": " Hello, comment ça va ?"
+    },
+    {
+      "id": 23,
+      "reception_date": "16/12/2025 15:37",
+      "sender_id": 42,
+      "channel": 17,
+      "content": " Hello"
     }
   ]
 }
