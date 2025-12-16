@@ -85,6 +85,14 @@
         41,
         42
       ]
+    },
+    {
+      "id": 17,
+      "name": "Collectivité 212",
+      "member_ids": [
+        45,
+        42
+      ]
     }
   ],
   "messages": [
@@ -118,6 +126,13 @@
       "sender_id": 42,
       "channel": 16,
       "content": " Rebonjour, je n'ai pas eu de réponses..."
+    },
+    {
+      "id": 22,
+      "reception_date": "16/12/2025 13:21",
+      "sender_id": 42,
+      "channel": 17,
+      "content": " Hello, comment ça va ?"
     }
   ]
 }

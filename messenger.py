@@ -92,13 +92,13 @@ def ajout_plusieurs_utilisateurs():
             save_server()
      
 def continuer_messagerie(groupe, user):
-    choixd = input('Voulez-vous continuer à discuter ? (Oui/Non)')
+    choixd = input('Voulez-vous continuer à discuter ? (Oui/Non)').split()
     if choixd == 'Oui':
         for dico_groupe in server['messages']:
             if dico_groupe['channel'] == groupe:
                 print(dico_groupe['content'])
         message = input('Discussion ouverte')
-        server['messages'].append()
+        #server['messages'].append()
         idm = generer_id(liste_idm)
         new_messagerie = {'id' : idm, 
                           'reception_date' : str(datetime.now().strftime("%d/%m/%Y %H:%M")), 
@@ -112,8 +112,6 @@ def continuer_messagerie(groupe, user):
 
 def ajout_groupe_et_messagerie_privés():
     first_user = input ('Votre prénom : ') 
-    
-    
     autre_utilisateur = input( 'Personne avec qui vous voulez parler : ')
     N_ut = []
     if autre_utilisateur not in liste:
@@ -127,13 +125,13 @@ def ajout_groupe_et_messagerie_privés():
         if dico['member_ids'] == nL or dico['member_ids'] == [indice(first_user),indice(autre_utilisateur)]:
             cpt+=1
             id_pour_mess = dico['id']
-    if cpt ==0 :  
-        ng = {'id': id_group, 'name' : group_name, 'member_ids' : nL }  
-        server['channels'].append(ng)
+    if cpt ==0 : 
+        id_group = generer_id(liste_idg) 
         idm = generer_id(liste_idm)
         group_name = input( 'Nom du groupe : ')
-        id_group = generer_id(liste_idg)
         messages = input('Discussion ouverte')
+        ng = {'id': id_group, 'name' : group_name, 'member_ids' : nL}
+        server['channels'].append(ng)
         new_messagerie = {'id' : idm, 
                           'reception_date' : str(datetime.now().strftime("%d/%m/%Y %H:%M")), 
                           'sender_id':indice(first_user), 
