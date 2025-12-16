@@ -2,6 +2,7 @@ from datetime import datetime
 import random 
 import json
 import os
+import shutil
 
 class User:
     def __init__(self, name: str, id: str): #crétion de la classe User qui contient tous les élements du dico users
@@ -24,6 +25,19 @@ class Message:
 
 
 server = { 'users':[], 'channels' : [], 'messages' : []}
+
+def print_logo():
+    try:
+        from pyfiglet import figlet_format
+        banner = figlet_format("Messenger", font="slant")
+    except Exception:
+        banner = "== Messenger =="
+    width = shutil.get_terminal_size((80, 20)).columns
+    for line in banner.splitlines():
+        print("\033[1;34m" + line.center(width) + "\033[0m")
+    stats = f"Utilisateurs : {len(server['users'])}  |  Canaux : {len(server['channels'])}"
+    print(stats.center(width) + "\n")
+    print('=== Bienvenue dans le service de messagerie ==='.center(width))
 
 with open("server.json", "r", encoding = "utf-8") as f: #Lecture du fichier uniquement 
     server1 = json.load(f)
@@ -239,7 +253,7 @@ def retour_menu():
     choix()
 
 def choix():
-    print('=== Bienvenue dans le service de messagerie ===')
+    print_logo()
     print('Sortie du service : S \n \nAffichage utilisateurs : u\n \nAffichage messages groupe : g\n \nAjout utilisateur : au\n \nAjout Groupe : ag\n \nAjout plusieurs utilisateurs : apu\n \nEcrire un message : em\n \n')
     choice = input('Sélectionnez une option : ')
     if choice == 'u':
