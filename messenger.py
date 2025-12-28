@@ -109,12 +109,12 @@ def redirection(): #redirige vers le menu principal
         retour_menu()
 
 def affiche_utilisateurs(): #affichage de tous les utilisateurs de la classe User
-    clear_screen()
+    #clear_screen()
     for user in server['users']:
         print(user.name)
     
 def afficher_messages_groupes(): #affichage des messages d'un groupe sélectionné
-    clear_screen()
+   # clear_screen()
     for group in server['channels']:
             print(group.name)
     name_g = input ('Choisissez un groupe : ')
@@ -128,7 +128,7 @@ def afficher_messages_groupes(): #affichage des messages d'un groupe sélectionn
                 break
             
 def ajout_utilisateur():
-    clear_screen()
+ #  clear_screen()
     nom = input( 'Name : ')
     if nom in liste:
          print(f'utilisateur : {nom} est déja dans le serveur')
@@ -140,7 +140,7 @@ def ajout_utilisateur():
     liste_id.append(id)
     
 def ajout_plusieurs_utilisateurs():
-     clear_screen()
+  #   clear_screen()
      liste_noms = input('Names : ').split(',')
      liste_noms_corr = [ user.strip() for user in liste_noms]
      for nom in liste_noms_corr : 
@@ -171,7 +171,7 @@ def continuer_messagerie(groupe, user):
         redirection()
 
 def ajout_groupe_et_messagerie_privés():
-    clear_screen()
+   # clear_screen()
     nom1 = input ('Votre prénom : ') 
     nom2 = input( 'Personne avec qui vous voulez parler : ')
     N_ut = []
@@ -205,7 +205,7 @@ def ajout_groupe_et_messagerie_privés():
     save_server()
     
 def ajout_groupe():
-    clear_screen()
+    #clear_screen()
     group_name = input( 'Name : ')
     id_group = generer_id(liste_idg)
     utilisateurs_group = input( 'Liste : ').split(',')
@@ -230,7 +230,7 @@ def ajout_groupe():
     save_server()  
 
 def ecriture_message():
-    clear_screen()
+    #clear_screen()
     privé = input('Souhaitez vous parler en privé à un autre utilisateur (Oui/Non) ? :')
     if privé == 'Non':
         fuser_name = input('Votre prénom : ')

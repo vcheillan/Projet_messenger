@@ -232,6 +232,20 @@
       "sender_id": 42,
       "channel": 17,
       "content": "je pars"
+    },
+    {
+      "id": 29,
+      "reception_date": "28/12/2025 18:28",
+      "sender_id": 42,
+      "channel": 17,
+      "content": "hello"
+    },
+    {
+      "id": 29,
+      "reception_date": "28/12/2025 18:29",
+      "sender_id": 42,
+      "channel": 17,
+      "content": "ça va ?"
     }
   ]
 }
