@@ -13,6 +13,10 @@ class User:
     def __init__(self, name: str, id: str): #crétion de la classe User qui contient tous les élements du dico users
         self.name = name
         self.id = id
+    def __repr__(self) -> str:
+  #'''Appelée lors de la conversion d'une instance de la classe `User` en `str`. C'est le cas lorsqu'on `print` une instance.'''
+        return f'User(name={self.name})'
+    
 
 class Channel:
     def __init__(self, name: str, idg: int,members : list): #crétion de la classe Channel qui contient tous les élements du dico channels
@@ -28,13 +32,25 @@ class Message:
         self.time = time
         self.sender = sender
 
-class RemoteStorage:
-    def __init__(self,name :str, idrs : int):
-        self.name = name
-        self.id = idrs
-    def get_users():
+class RemoteStorage: 
+    def get_users()-> list[User]:
+        liste = []
         response = requests.get("https://groupe5-python-mines.fr/users")
-        return response
+        for dico in response.json():
+            liste.append(User(dico['name'],dico['id']))
+        return liste
+    def create_user(name):
+        id = generer_id()
+        user = {'name' : name, 'id' : id}
+        
+
+    
+    
+    
+
+storage = RemoteStorage.get_users().json()
+donnees = storage[0]
+
 
 
 
@@ -61,7 +77,9 @@ for group in server1['channels']:
     server['channels'].append(Channel(group['name'], group['id'], group['member_ids']))
 for message in server1['messages']:
     server['messages'].append(Message(message['channel'],message['id'],message['content'], message['reception_date'], message['sender_id']))
-
+#with open(RemoteStorage.get_users(), "r", encoding = "utf-8") as f: #Lecture du fichier uniquement 
+    #web1 = json.load(f)
+#print(web1)
 def save_server(): #sauvegarde du server
      new_server = { 'users':[], 'channels' : [], 'messages' : []} #conversion inverse afin de changer les classes locales en des dictionnaires
      for user in server['users']:
@@ -240,7 +258,7 @@ def ajout_groupe():
     for x in user_corr:
         nL.append(indice(x))
     new_group = Channel(group_name,id_group,nL)
-    server['channel'].append(new_group)
+    server['channels'].append(new_group)
     save_server()  
 
 def ecriture_message():
@@ -314,4 +332,4 @@ def choix():
         print('Commande inconnue : ', choice)
         retour_menu()
 
-choix()
+#choix()
