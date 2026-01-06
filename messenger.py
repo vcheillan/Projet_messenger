@@ -33,26 +33,20 @@ class Message:
         self.sender = sender
 
 class RemoteStorage: 
-    def get_users()-> list[User]:
+    def get_users(self)-> list[User]:
         liste = []
         response = requests.get("https://groupe5-python-mines.fr/users")
         for dico in response.json():
             liste.append(User(dico['name'],dico['id']))
         return liste
-    def create_user(name):
-        id = generer_id()
-        user = {'name' : name, 'id' : id}
+    def create_user(self,name):
+        user = {'name' : name}
+        requests.post("https://groupe5-python-mines.fr/users/create",json = user)
+
         
-
-    
-    
-    
-
-storage = RemoteStorage.get_users().json()
-donnees = storage[0]
-
-
-
+   
+storage = RemoteStorage()
+storage.create_user('Valentin')   
 
 server = { 'users':[], 'channels' : [], 'messages' : []}
 
@@ -142,7 +136,7 @@ def redirection(): #redirige vers le menu principal
 
 def affiche_utilisateurs(): #affichage de tous les utilisateurs de la classe User
     #clear_screen()
-    for user in server['users']:
+    for user in storage.get_users():
         print(user.name)
     
 def afficher_messages_groupes(): #affichage des messages d'un groupe sélectionné
@@ -332,4 +326,4 @@ def choix():
         print('Commande inconnue : ', choice)
         retour_menu()
 
-#choix()
+choix()
