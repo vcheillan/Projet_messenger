@@ -3,6 +3,11 @@ import random
 import json
 import os
 import shutil
+import requests
+
+# Petite aide pour colorer le texte dans le terminal (codes ANSI)
+def colored(text: str, color_code: str) -> str:
+    return f"\033[{color_code}m{text}\033[0m"
 
 class User:
     def __init__(self, name: str, id: str): #crétion de la classe User qui contient tous les élements du dico users
@@ -22,6 +27,15 @@ class Message:
         self.content = content
         self.time = time
         self.sender = sender
+
+class RemoteStorage:
+    def __init__(self,name :str, idrs : int):
+        self.name = name
+        self.id = idrs
+    def get_users():
+        response = requests.get("https://groupe5-python-mines.fr/users")
+        return response
+
 
 
 server = { 'users':[], 'channels' : [], 'messages' : []}
@@ -156,7 +170,7 @@ def continuer_messagerie(groupe, user):
     if choixd == 'Oui':
         for message in server['messages']:
             if message.channel == groupe:
-                print(message.time, indice_vers_nom(message.sender))
+                print(colored(message.time, '1;36'), colored(indice_vers_nom(message.sender), '1;33')) #foncion couleur générée par l'IA, c'est uniquement pour l'esthétique
                 print('')
                 print(message.content)
                 print('')
