@@ -3,17 +3,29 @@ import random
 import json
 import os
 import shutil
+import requests
+
+# Petite aide pour colorer le texte dans le terminal (codes ANSI)
+def colored(text: str, color_code: str) -> str:
+    return f"\033[{color_code}m{text}\033[0m"
 
 class User:
     def __init__(self, name: str, id: str): #crétion de la classe User qui contient tous les élements du dico users
         self.name = name
         self.id = id
+    def __repr__(self) -> str:
+  #'''Appelée lors de la conversion d'une instance de la classe `User` en `str`. C'est le cas lorsqu'on `print` une instance.'''
+        return f'User(name={self.name})'
+    
 
 class Channel:
     def __init__(self, name: str, idg: int,members : list): #crétion de la classe Channel qui contient tous les élements du dico channels
         self.name = name
         self.idg = idg
         self.members = members
+    def __repr__(self) -> str:
+  #'''Appelée lors de la conversion d'une instance de la classe `Channel` en `str`. C'est le cas lorsqu'on `print` une instance.'''
+        return f'Channel(name={self.name}, members {self.members})'
 
 class Message:
     def __init__(self, channel: int, id: int,content : list[str], time : str, sender : int): #crétion de la classe Message qui contient tous les élements du dico messages
@@ -22,10 +34,74 @@ class Message:
         self.content = content
         self.time = time
         self.sender = sender
+    
+    def __repr__(self) -> str:
+  #'''Appelée lors de la conversion d'une instance de la classe `Message` en `str`. C'est le cas lorsqu'on `print` une instance.'''
+        return f'Message(Content={self.content})'
+
+class RemoteStorage: 
+    def get_users(self)-> list[User]:
+        liste = []
+        response = requests.get("https://groupe5-python-mines.fr/users")
+        for dico in response.json():
+            liste.append(User(dico['name'],dico['id']))
+        return liste
+    
+    def create_user(self,name :str)-> int :
+        user = {'name' : name}
+        response = requests.post("https://groupe5-python-mines.fr/users/create",json = user)
+        return response.json()['id']
+
+    def get_channel(self)-> list[User]:
+        liste = []
+        response = requests.get("https://groupe5-python-mines.fr/channels")
+        print(response.json())
+        for dico in response.json():
+            members = requests.get(f"https://groupe5-python-mines.fr/channels/{dico['id']}/members").json()
+            print(members)
+            liste.append(Channel(dico['name'],dico['id'],members))
+            print(Channel(dico['name'],dico['id'],members))  
+        return liste
+    def create_channel(self,name, id_channel):
+        channel = {'name' : name, 'id' : id_channel }
+        requests.post("https://groupe5-python-mines.fr/channels/create",json = channel)
+        print(requests.post("https://groupe5-python-mines.fr/channels/create",json = channel))
+    
+    def add_user_channel(self,user_id ,id_channel):
+        user = {'user_id' : user_id}
+        post_user = requests.post(f"https://groupe5-python-mines.fr/channels/{id_channel}/join",json = user )
+        print(post_user.text)
+    
+    def get_message(self)-> list[User]:
+        liste = []
+        response = requests.get("https://groupe5-python-mines.fr/messages")
+        for dico in response.json():
+            liste.append(Message(dico['channel_id'],dico['id'], dico['content'], dico['reception_date'], dico['sender_id']))
+        return liste
+    
+    def get_channel_message(self, id_channel)-> list[User]:
+        liste = []
+        response = requests.get(f"https://groupe5-python-mines.fr/channel/{id_channel}/messages")
+        for dico in response.json():
+            liste.append(Message(dico['channel_id'],dico['id'], dico['content'], dico['reception_date'], dico['sender_id']))
+        return liste
+
+    def create_message(self,id_channel, content, sender_id):
+        message = {'sender_id':sender_id, 'content' : content }
+        requests.post(f"https://groupe5-python-mines.fr/channels/{id_channel}/messages/post",json = message)
 
 
+
+
+storage = RemoteStorage()
+#storage.create_user('Valentin')   
+#storage.create_channel('Amis',[1,2])
 server = { 'users':[], 'channels' : [], 'messages' : []}
+print(storage.get_channel_message(10))
+#storage.create_message(10,'Bonjour Léonard', 8)
 
+#print(storage.get_channel())
+#print(storage.get_message())
 def print_logo():
     try:
         from pyfiglet import figlet_format
@@ -47,7 +123,9 @@ for group in server1['channels']:
     server['channels'].append(Channel(group['name'], group['id'], group['member_ids']))
 for message in server1['messages']:
     server['messages'].append(Message(message['channel'],message['id'],message['content'], message['reception_date'], message['sender_id']))
-
+#with open(RemoteStorage.get_users(), "r", encoding = "utf-8") as f: #Lecture du fichier uniquement 
+    #web1 = json.load(f)
+#print(web1)
 def save_server(): #sauvegarde du server
      new_server = { 'users':[], 'channels' : [], 'messages' : []} #conversion inverse afin de changer les classes locales en des dictionnaires
      for user in server['users']:
@@ -110,7 +188,7 @@ def redirection(): #redirige vers le menu principal
 
 def affiche_utilisateurs(): #affichage de tous les utilisateurs de la classe User
     #clear_screen()
-    for user in server['users']:
+    for user in storage.get_users():
         print(user.name)
     
 def afficher_messages_groupes(): #affichage des messages d'un groupe sélectionné
@@ -156,7 +234,7 @@ def continuer_messagerie(groupe, user):
     if choixd == 'Oui':
         for message in server['messages']:
             if message.channel == groupe:
-                print(message.time, indice_vers_nom(message.sender))
+                print(colored(message.time, '1;36'), colored(indice_vers_nom(message.sender), '1;33')) #foncion couleur générée par l'IA, c'est uniquement pour l'esthétique
                 print('')
                 print(message.content)
                 print('')
@@ -226,7 +304,7 @@ def ajout_groupe():
     for x in user_corr:
         nL.append(indice(x))
     new_group = Channel(group_name,id_group,nL)
-    server['channel'].append(new_group)
+    server['channels'].append(new_group)
     save_server()  
 
 def ecriture_message():
@@ -300,4 +378,4 @@ def choix():
         print('Commande inconnue : ', choice)
         retour_menu()
 
-choix()
+#choix()
