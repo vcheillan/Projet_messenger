@@ -81,7 +81,7 @@ class RemoteStorage:
     
     def get_channel_message(self, id_channel)-> list[User]:
         liste = []
-        response = requests.get(f"https://groupe5-python-mines.fr/channel/{id_channel}/messages")
+        response = requests.get(f"https://groupe5-python-mines.fr/channels/{id_channel}/messages")
         for dico in response.json():
             liste.append(Message(dico['channel_id'],dico['id'], dico['content'], dico['reception_date'], dico['sender_id']))
         return liste
@@ -90,43 +90,6 @@ class RemoteStorage:
         message = {'sender_id':sender_id, 'content' : content }
         requests.post(f"https://groupe5-python-mines.fr/channels/{id_channel}/messages/post",json = message)
 
-class RemoteStorage: 
-    def get_users(self)-> list[User]:
-        liste = []
-        response = requests.get("https://groupe5-python-mines.fr/users")
-        for dico in response.json():
-            liste.append(User(dico['name'],dico['id']))
-        return liste
-    
-    def create_user(self,name):
-        user = {'name' : name}
-        requests.post("https://groupe5-python-mines.fr/users/create",json = user)
-
-    def get_channel(self)-> list[User]:
-        liste = []
-        response = requests.get("https://groupe5-python-mines.fr/channels")
-        for dico in response.json():
-            members = requests.get(f"https://groupe5-python-mines.fr/channels/{dico['id']}/members").json()
-            for dico_members in members:
-                liste.append(Channel(dico['name'],dico['id'],dico_members['id'] ))
-        return liste
-    def create_channel(self,name, members):
-        channel = {'name' : name }
-        requests.post("https://groupe5-python-mines.fr/channels/create",json = channel)
-    
-    def add_user_channel(self,id_user,id_channel):
-        requests.post(f"https://groupe5-python-mines.fr/channels/{id_channel}/join", )
-
-    
-    def get_message(self)-> list[User]:
-        liste = []
-        response = requests.get("https://groupe5-python-mines.fr/messages")
-        for dico in response.json():
-            liste.append(User(dico['name'],dico['id'], dico['member_ids']))
-        return liste
-    def create_message(self,name, members):
-        channel = {'name' : name, 'member_ids' : members }
-        requests.post("https://groupe5-python-mines.fr/channels/create",json = channel)
 
 
 
@@ -140,7 +103,7 @@ print(storage.get_channel_message(10))
 
 #print(storage.get_channel())
 #print(storage.get_message())
-storage.add_user_channel(4,2)
+#storage.add_user_channel(4,2)
 def print_logo():
     try:
         from pyfiglet import figlet_format
