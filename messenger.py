@@ -55,12 +55,12 @@ class RemoteStorage:
     def get_channel(self)-> list[User]:
         liste = []
         response = requests.get("https://groupe5-python-mines.fr/channels")
-        print(response.json())
+        #print(response.json())
         for dico in response.json():
             members = requests.get(f"https://groupe5-python-mines.fr/channels/{dico['id']}/members").json()
-            print(members)
+            #print(members)
             liste.append(Channel(dico['name'],dico['id'],members))
-            print(Channel(dico['name'],dico['id'],members))  
+            #print(Channel(dico['name'],dico['id'],members))  
         return liste
     def create_channel(self,name, id_channel):
         channel = {'name' : name, 'id' : id_channel }
@@ -95,10 +95,11 @@ class RemoteStorage:
 
    
 storage = RemoteStorage()
+#print(storage.get_channel())
 #storage.create_user('Valentin')   
 #storage.create_channel('Amis',[1,2])
 server = { 'users':[], 'channels' : [], 'messages' : []}
-print(storage.get_channel_message(10))
+#print(storage.get_channel_message(10))
 #storage.create_message(10,'Bonjour Léonard', 8)
 
 #print(storage.get_channel())
@@ -157,13 +158,13 @@ def indice_g(groupe):#convertit un nom de groupe en indice de groupe
         if group.name == groupe:
             return groupe.idg
 
-liste_id = [user.id for user in server['users']]
+liste_id = [user.id for user in storage.get_users()]
 
-liste_idg = [group.idg for group in server['channels']]
+liste_idg = [group.idg for group in storage.get_channel()]
 
-liste_idm = [message.id for message in server['messages']]
+liste_idm = [message.id for message in storage.get_message()]
 
-liste = [user.name for user in server['users']]
+liste = [user.name for user in storage.get_users()]
 def clear_screen():
     os.system('cls' if os.name == 'nt' else 'clear')
 
@@ -195,17 +196,13 @@ def affiche_utilisateurs(): #affichage de tous les utilisateurs de la classe Use
     
 def afficher_messages_groupes(): #affichage des messages d'un groupe sélectionné
    # clear_screen()
-    for group in server['channels']:
-            print(group.name)
-    name_g = input ('Choisissez un groupe : ')
-    number = indice_g(name_g)
-    if number not in liste_idg:
-        print ('Ce groupe nexiste pas')
-    else:
-        for message in server['messages']:
-            if message.channel == number :
-                print(message.content)
-                break
+    for group in storage.get_channel():
+            print(group.name, group.idg)
+    name_g = input ('Choisissez un groupe (son identifiant): ')
+    messages = storage.get_channel_message(name_g)
+    for message in messages :
+        print(message.content)
+
             
 def ajout_utilisateur():
  #  clear_screen()
@@ -234,18 +231,15 @@ def continuer_messagerie(groupe, user):
     choixd = input('Voulez-vous continuer à discuter ? (Oui/Non) :')
     print(choixd)
     if choixd == 'Oui':
-        for message in server['messages']:
-            if message.channel == groupe:
-                print(colored(message.time, '1;36'), colored(indice_vers_nom(message.sender), '1;33')) #foncion couleur générée par l'IA, c'est uniquement pour l'esthétique
-                print('')
-                print(message.content)
-                print('')
-                print('')
+        for message in storage.get_channel_message(groupe.idg):
+            print(colored(message.time, '1;36'), colored(indice_vers_nom(message.sender), '1;33')) #foncion couleur générée par l'IA, c'est uniquement pour l'esthétique
+            print('')
+            print(message.content)
+            print('')
+            print('')
         message = input('message :')
         #server['messages'].append()
-        idm = generer_id(liste_idm)
-        new_messagerie = Message(groupe, idm, message,str(datetime.now().strftime("%d/%m/%Y %H:%M")),indice(user))
-        server['messages'].append(new_messagerie)
+        storage.create_message(groupe.idg,message, user.id)
         continuer_messagerie(groupe,user)
     else:
         redirection()
@@ -287,7 +281,7 @@ def ajout_groupe_et_messagerie_privés():
 def ajout_groupe():
     #clear_screen()
     group_name = input( 'Name : ')
-    id_group = generer_id(liste_idg)
+    #id_group = generer_id(liste_idg)
     utilisateurs_group = input( 'Liste : ').split(',')
     user_corr = [ user.strip() for user in utilisateurs_group]
     N_ut = []
@@ -315,15 +309,17 @@ def ecriture_message():
     if privé == 'Non':
         fuser_name = input('Votre prénom : ')
         print('Groupe(s) disponibles :')
-        for group in server['channels']:
-            if indice(fuser_name) in group.members:
-                print(group.name)
+        for group in storage.get_channel():
+            for user in group.members:
+                if fuser_name == user['name']:
+                    print(group.idg,':' ,group.name)
         group_name = input('Quel est le groupe choisi ? :')
         indice_groupe = indice_g(group_name)
-        idmes = generer_id(liste_idm)
+        #idmes = generer_id(liste_idm)
         message = input('Discussion ouverte :' )
-        server['messages'].append(Message(indice_groupe,idmes, message,str(datetime.now().strftime("%d/%m/%Y %H:%M")),indice(fuser_name)))
-        continuer_messagerie(indice_groupe,fuser_name)
+        #server['messages'].append(Message(indice_groupe,idmes, message,str(datetime.now().strftime("%d/%m/%Y %H:%M")),indice(fuser_name)))
+        storage.create_message(indice_groupe,message,indice(fuser_name))
+        continuer_messagerie(group,fuser_name)
     else :
         ajout_groupe_et_messagerie_privés()
 
@@ -380,4 +376,4 @@ def choix():
         print('Commande inconnue : ', choice)
         retour_menu()
 
-#choix()
+choix()
