@@ -4,96 +4,14 @@ import json
 import os
 import shutil
 import requests
-
+from model import User
+from model import Channel
+from model import Message
+from remote_storage import RemoteStorage
 # Petite aide pour colorer le texte dans le terminal (codes ANSI)
 def colored(text: str, color_code: str) -> str:
     return f"\033[{color_code}m{text}\033[0m"
-
-class User:
-    def __init__(self, name: str, id: str): #crétion de la classe User qui contient tous les élements du dico users
-        self.name = name
-        self.id = id
-    def __repr__(self) -> str:
-  #'''Appelée lors de la conversion d'une instance de la classe `User` en `str`. C'est le cas lorsqu'on `print` une instance.'''
-        return f'User(name={self.name})'
-    
-
-class Channel:
-    def __init__(self, name: str, idg: int,members : list): #crétion de la classe Channel qui contient tous les élements du dico channels
-        self.name = name
-        self.idg = idg
-        self.members = members
-    def __repr__(self) -> str:
-  #'''Appelée lors de la conversion d'une instance de la classe `Channel` en `str`. C'est le cas lorsqu'on `print` une instance.'''
-        return f'Channel(name={self.name}, members {self.members})'
-
-class Message:
-    def __init__(self, channel: int, id: int,content : list[str], time : str, sender : int): #crétion de la classe Message qui contient tous les élements du dico messages
-        self.channel = channel
-        self.id = id
-        self.content = content
-        self.time = time
-        self.sender = sender
-    
-    def __repr__(self) -> str:
-  #'''Appelée lors de la conversion d'une instance de la classe `Message` en `str`. C'est le cas lorsqu'on `print` une instance.'''
-        return f'Message(Content={self.content})'
-
-class RemoteStorage: 
-    def get_users(self)-> list[User]:
-        liste = []
-        response = requests.get("https://groupe5-python-mines.fr/users")
-        for dico in response.json():
-            liste.append(User(dico['name'],dico['id']))
-        return liste
-    
-    def create_user(self,name :str)-> int :
-        user = {'name' : name}
-        response = requests.post("https://groupe5-python-mines.fr/users/create",json = user)
-        return response.json()['id']
-
-    def get_channel(self)-> list[User]:
-        liste = []
-        response = requests.get("https://groupe5-python-mines.fr/channels")
-        #print(response.json())
-        for dico in response.json():
-            members = requests.get(f"https://groupe5-python-mines.fr/channels/{dico['id']}/members").json()
-            #print(members)
-            liste.append(Channel(dico['name'],dico['id'],members))
-            #print(Channel(dico['name'],dico['id'],members))  
-        return liste
-    def create_channel(self,name, id_channel):
-        channel = {'name' : name, 'id' : id_channel }
-        requests.post("https://groupe5-python-mines.fr/channels/create",json = channel)
-        print(requests.post("https://groupe5-python-mines.fr/channels/create",json = channel))
-    
-    def add_user_channel(self,user_id ,id_channel):
-        user = {'user_id' : user_id}
-        post_user = requests.post(f"https://groupe5-python-mines.fr/channels/{id_channel}/join",json = user )
-        print(post_user.text)
-    
-    def get_message(self)-> list[User]:
-        liste = []
-        response = requests.get("https://groupe5-python-mines.fr/messages")
-        for dico in response.json():
-            liste.append(Message(dico['channel_id'],dico['id'], dico['content'], dico['reception_date'], dico['sender_id']))
-        return liste
-    
-    def get_channel_message(self, id_channel)-> list[User]:
-        liste = []
-        response = requests.get(f"https://groupe5-python-mines.fr/channels/{id_channel}/messages")
-        for dico in response.json():
-            liste.append(Message(dico['channel_id'],dico['id'], dico['content'], dico['reception_date'], dico['sender_id']))
-        return liste
-
-    def create_message(self,id_channel, content, sender_id):
-        message = {'sender_id':sender_id, 'content' : content }
-        requests.post(f"https://groupe5-python-mines.fr/channels/{id_channel}/messages/post",json = message)
-
-
-
-
-   
+ 
 storage = RemoteStorage()
 #print(storage.get_channel())
 #storage.create_user('Valentin')   
@@ -210,11 +128,8 @@ def ajout_utilisateur():
     if nom in liste:
          print(f'utilisateur : {nom} est déja dans le serveur')
          redirection()
-    id = generer_id(liste_id)
-    user = User(nom, id)
-    server['users'].append(user)
-    save_server()
-    liste_id.append(id)
+    storage.create_user(nom)
+
     
 def ajout_plusieurs_utilisateurs():
   #   clear_screen()
