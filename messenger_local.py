@@ -138,8 +138,9 @@ def ajout_plusieurs_utilisateurs():
      liste_noms_corr = [ user.strip() for user in liste_noms]
      for nom in liste_noms_corr : 
             id = generer_id(liste_id)
-            user = User(nom,id)
-            server['users'].append(user)
+            #user = User(nom,id)
+            storage.create_user(nom)
+            #server['users'].append(user)
             liste_id.append(id)
             save_server()
      
@@ -172,25 +173,28 @@ def ajout_groupe_et_messagerie_privés():
         redirection()
     nL = [indice(nom2), indice(nom1)]
     cpt =0
-    for group in server['channels']:
+    for group in storage.get_channel():
         if group.members == nL or group.members == [indice(nom1),indice(nom2)]:
             cpt+=1
             id_pour_mess = group.idg
     if cpt ==0 : #si le groupe n'existe pas, on le crée
-        id_group = generer_id(liste_idg) 
-        idm = generer_id(liste_idm)
+        #id_group = generer_id(liste_idg) 
+        #idm = generer_id(liste_idm)
         group_name = input( 'Nom du groupe : ')
         messages = input('message : ')
-        new_group = Channel(group_name,id_group,nL)
-        new_messagerie = Message(id_group, idm, [],str(datetime.now().strftime("%d/%m/%Y %H:%M")),indice(nom1))
-        server['messages'].append(new_messagerie)
-        server['channels'].append(new_group)
-        continuer_messagerie(id_group,nom1)
+        #new_group = Channel(group_name,id_group,nL)
+        #new_messagerie = Message(id_group, idm, [],str(datetime.now().strftime("%d/%m/%Y %H:%M")),indice(nom1))
+        id_channel = storage.create_channel(group_name)
+        storage.create_message(id_channel, messages, indice(nom1))
+        #server['messages'].append(new_messagerie)
+        #server['channels'].append(new_group)
+        continuer_messagerie(id_channel,nom1)
     else :
-        idm = generer_id(liste_idm)
+        #idm = generer_id(liste_idm)
         messages = input('message : ')
-        new_messagerie = Message(id_pour_mess, idm, messages,str(datetime.now().strftime("%d/%m/%Y %H:%M")),indice(nom1))
-        server['messages'].append(new_messagerie)
+        #new_messagerie = Message(id_pour_mess, idm, messages,str(datetime.now().strftime("%d/%m/%Y %H:%M")),indice(nom1))
+        storage.create_message(id_pour_mess,messages,indice(nom1))
+        #server['messages'].append(new_messagerie)
         continuer_messagerie(id_pour_mess,nom1)
     save_server()
     
@@ -198,7 +202,7 @@ def ajout_groupe():
     #clear_screen()
     group_name = input( 'Name : ')
     #id_group = generer_id(liste_idg)
-    utilisateurs_group = input( 'Liste : ').split(',')
+    utilisateurs_group = input( 'Liste des utilisateurs : ').split(',')
     user_corr = [ user.strip() for user in utilisateurs_group]
     N_ut = []
     for user in user_corr:
@@ -212,11 +216,11 @@ def ajout_groupe():
          print(f'{N_ut} ne font pas parti des utilisateurs, il faut les ajouter :')
          ajout_plusieurs_utilisateurs() 
          ajout_groupe()        
-    nL = []
-    for x in user_corr:
-        nL.append(indice(x))
-    new_group = Channel(group_name,id_group,nL)
-    server['channels'].append(new_group)
+    #new_group = Channel(group_name,id_group,nL)
+    id_channel = storage.create_channel(group_name)
+    for name in user_corr:
+        storage.add_user_channel(indice(name),id_channel)
+    #server['channels'].append(new_group)
     save_server()  
 
 def ecriture_message():
