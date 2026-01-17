@@ -63,7 +63,7 @@ def save_server(): #sauvegarde du server
           json.dump(new_server, f, ensure_ascii=False, indent=2)
 
 def indice(nom : str): #convertit un nom d'utilisateur en indice utilisateur 
-    for user in server['users']:
+    for user in storage.get_users():
         if user.name==nom:
             return user.id
 
