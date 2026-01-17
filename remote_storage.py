@@ -25,10 +25,10 @@ class RemoteStorage:
             liste.append(Channel(dico['name'],dico['id'],members))
             #print(Channel(dico['name'],dico['id'],members))  
         return liste
-    def create_channel(self,name, id_channel):
-        channel = {'name' : name, 'id' : id_channel }
-        requests.post("https://groupe5-python-mines.fr/channels/create",json = channel)
-        print(requests.post("https://groupe5-python-mines.fr/channels/create",json = channel))
+    def create_channel(self,name):
+        channel = {'name' : name}
+        response = requests.post("https://groupe5-python-mines.fr/channels/create",json = channel)
+        return response.json()['id']
     
     def add_user_channel(self,user_id ,id_channel):
         user = {'user_id' : user_id}
