@@ -32,7 +32,7 @@ def print_logo():
     width = shutil.get_terminal_size((80, 20)).columns
     for line in banner.splitlines():
         print("\033[1;34m" + line.center(width) + "\033[0m")
-    stats = f"Utilisateurs : {len(server['users'])}  |  Canaux : {len(server['channels'])}"
+    stats = f"Utilisateurs : {len(storage.get_users())}  |  Canaux : {len(storage.get_channel())}"
     print(stats.center(width) + "\n")
     print('=== Bienvenue dans le service de messagerie ==='.center(width))
 
@@ -58,11 +58,14 @@ def indice_vers_nom(indice : int):
     for user in storage.get_users():
         if user.id == indice:
             return user.name
-def indice_g(groupe):#convertit un nom de groupe en indice de groupe 
+def indice_g(name):#convertit un nom de groupe en indice de groupe 
     for group in storage.get_channel():
-        if group.name == groupe:
-            return groupe.idg
-
+        if group.name == name:
+            return group.idg
+def indice_g_vers_nom(id_channel):
+    for group in storage.get_channel():
+        if group.idg == id_channel:
+            return group.name
 liste_id = [user.id for user in storage.get_users()]
 
 liste_idg = [group.idg for group in storage.get_channel()]
@@ -77,6 +80,7 @@ def generer_id(L : list[int]): #génère un identifiant user
      return max(L)+1
 
 def redirection(): #redirige vers le menu principal
+    print('')
     print('Redirections possibles : \nAffichage utilisateur : Au\n  \nAffichage messages groupe : Amg\n  \nAjouter un utilisateur : Aju\n  \nAjouter un groupe : Ajg\n \nAjouter plusieurs utilisateurs : Ajus\n  \nRetour menu principal : RM\n \nEcriture message : em')
     choix = input('Choix : ')
     if choix == 'Au':
@@ -97,16 +101,22 @@ def redirection(): #redirige vers le menu principal
 def affiche_utilisateurs(): #affichage de tous les utilisateurs de la classe User
     #clear_screen()
     for user in storage.get_users():
-        print(user.name)
+        print(user.id,' : ',user.name)
+    redirection()
     
 def afficher_messages_groupes(): #affichage des messages d'un groupe sélectionné
    # clear_screen()
     for group in storage.get_channel():
-            print(group.name, group.idg)
-    name_g = input ('Choisissez un groupe (son identifiant): ')
-    messages = storage.get_channel_message(name_g)
+            print(group.idg, ' : ',group.name )
+    id_g = input ('Choisissez un groupe (son identifiant): ')
+    messages = storage.get_channel_message(int(id_g))
+    print("=====\033[3m" + f'Groupe : {indice_g_vers_nom(int(id_g))}' + "\033[0m====")
+    print('')
     for message in messages :
+        print(colored(message.time, '1;36'), colored(indice_vers_nom(message.sender), '1;33')) #foncion couleur générée par l'IA, c'est uniquement pour l'esthétique
+        print('')
         print(message.content)
+        print('')
 
             
 def ajout_utilisateur():
@@ -131,7 +141,7 @@ def ajout_plusieurs_utilisateurs():
             liste_id.append(id)
             #save_server()
      
-def continuer_messagerie(groupe, user):
+def continuer_messagerie(groupe, user_name):
     choixd = input('Voulez-vous continuer à discuter ? (Oui/Non) :')
     print(choixd)
     if choixd == 'Oui':
@@ -143,8 +153,8 @@ def continuer_messagerie(groupe, user):
             print('')
         message = input('message :')
         #server['messages'].append()
-        storage.create_message(groupe.idg,message, user.id)
-        continuer_messagerie(groupe,user)
+        storage.create_message(groupe.idg,message, indice(user_name))
+        continuer_messagerie(groupe,user_name)
     else:
         redirection()
 
@@ -246,7 +256,8 @@ def choix():
             redirection()
         
     elif choice == 'S':
-        print('Sortie du service')
+        return print('Sortie du service')
+        
     
 
     elif choice == 'g':
