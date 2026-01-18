@@ -47,32 +47,19 @@ for message in server1['messages']:
 #with open(RemoteStorage.get_users(), "r", encoding = "utf-8") as f: #Lecture du fichier uniquement 
     #web1 = json.load(f)
 #print(web1)
-def save_server(): #sauvegarde du server
-     new_server = { 'users':[], 'channels' : [], 'messages' : []} #conversion inverse afin de changer les classes locales en des dictionnaires
-     for user in server['users']:
-         new_server['users'].append({'id' : user.id, 'name' : user.name})
-     for channel in server['channels']:
-         new_server['channels'].append({'id' : channel.idg, 'name' : channel.name, 'member_ids' : channel.members})
-     for message in server['messages']:
-         new_server['messages'].append({'id' : message.id, 
-                                        'reception_date' : message.time, 
-                                        'sender_id' : message.sender, 
-                                        'channel' : message.channel,
-                                        'content' : message.content})
-     with open("server.json","w", encoding = "utf-8") as f: #écriture du fichier --> modification 
-          json.dump(new_server, f, ensure_ascii=False, indent=2)
+
 
 def indice(nom : str): #convertit un nom d'utilisateur en indice utilisateur 
-    for user in server['users']:
+    for user in storage.get_users():
         if user.name==nom:
             return user.id
 
 def indice_vers_nom(indice : int):
-    for user in server['users']:
+    for user in storage.get_users():
         if user.id == indice:
             return user.name
 def indice_g(groupe):#convertit un nom de groupe en indice de groupe 
-    for group in server['channels']:
+    for group in storage.get_channel():
         if group.name == groupe:
             return groupe.idg
 
@@ -128,8 +115,9 @@ def ajout_utilisateur():
     if nom in liste:
          print(f'utilisateur : {nom} est déja dans le serveur')
          redirection()
-    storage.create_user(nom)
-
+    id = storage.create_user(nom)
+    #save_server()
+    liste_id.append(id)
     
 def ajout_plusieurs_utilisateurs():
   #   clear_screen()
@@ -137,10 +125,11 @@ def ajout_plusieurs_utilisateurs():
      liste_noms_corr = [ user.strip() for user in liste_noms]
      for nom in liste_noms_corr : 
             id = generer_id(liste_id)
-            user = User(nom,id)
-            server['users'].append(user)
+            #user = User(nom,id)
+            storage.create_user(nom)
+            #server['users'].append(user)
             liste_id.append(id)
-            save_server()
+            #save_server()
      
 def continuer_messagerie(groupe, user):
     choixd = input('Voulez-vous continuer à discuter ? (Oui/Non) :')
@@ -171,33 +160,36 @@ def ajout_groupe_et_messagerie_privés():
         redirection()
     nL = [indice(nom2), indice(nom1)]
     cpt =0
-    for group in server['channels']:
+    for group in storage.get_channel():
         if group.members == nL or group.members == [indice(nom1),indice(nom2)]:
             cpt+=1
             id_pour_mess = group.idg
     if cpt ==0 : #si le groupe n'existe pas, on le crée
-        id_group = generer_id(liste_idg) 
-        idm = generer_id(liste_idm)
+        #id_group = generer_id(liste_idg) 
+        #idm = generer_id(liste_idm)
         group_name = input( 'Nom du groupe : ')
         messages = input('message : ')
-        new_group = Channel(group_name,id_group,nL)
-        new_messagerie = Message(id_group, idm, [],str(datetime.now().strftime("%d/%m/%Y %H:%M")),indice(nom1))
-        server['messages'].append(new_messagerie)
-        server['channels'].append(new_group)
-        continuer_messagerie(id_group,nom1)
+        #new_group = Channel(group_name,id_group,nL)
+        #new_messagerie = Message(id_group, idm, [],str(datetime.now().strftime("%d/%m/%Y %H:%M")),indice(nom1))
+        id_channel = storage.create_channel(group_name)
+        storage.create_message(id_channel, messages, indice(nom1))
+        #server['messages'].append(new_messagerie)
+        #server['channels'].append(new_group)
+        continuer_messagerie(id_channel,nom1)
     else :
-        idm = generer_id(liste_idm)
+        #idm = generer_id(liste_idm)
         messages = input('message : ')
-        new_messagerie = Message(id_pour_mess, idm, messages,str(datetime.now().strftime("%d/%m/%Y %H:%M")),indice(nom1))
-        server['messages'].append(new_messagerie)
+        #new_messagerie = Message(id_pour_mess, idm, messages,str(datetime.now().strftime("%d/%m/%Y %H:%M")),indice(nom1))
+        storage.create_message(id_pour_mess,messages,indice(nom1))
+        #server['messages'].append(new_messagerie)
         continuer_messagerie(id_pour_mess,nom1)
-    save_server()
+    #save_server()
     
 def ajout_groupe():
     #clear_screen()
     group_name = input( 'Name : ')
     #id_group = generer_id(liste_idg)
-    utilisateurs_group = input( 'Liste : ').split(',')
+    utilisateurs_group = input( 'Liste des utilisateurs : ').split(',')
     user_corr = [ user.strip() for user in utilisateurs_group]
     N_ut = []
     for user in user_corr:
@@ -211,12 +203,12 @@ def ajout_groupe():
          print(f'{N_ut} ne font pas parti des utilisateurs, il faut les ajouter :')
          ajout_plusieurs_utilisateurs() 
          ajout_groupe()        
-    nL = []
-    for x in user_corr:
-        nL.append(indice(x))
-    new_group = Channel(group_name,id_group,nL)
-    server['channels'].append(new_group)
-    save_server()  
+    #new_group = Channel(group_name,id_group,nL)
+    id_channel = storage.create_channel(group_name)
+    for name in user_corr:
+        storage.add_user_channel(indice(name),id_channel)
+    #server['channels'].append(new_group)
+    #save_server()  
 
 def ecriture_message():
     #clear_screen()
@@ -238,7 +230,7 @@ def ecriture_message():
     else :
         ajout_groupe_et_messagerie_privés()
 
-    save_server() 
+    #save_server() 
     
 def retour_menu():
     choix()
