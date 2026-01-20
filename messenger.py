@@ -17,7 +17,7 @@ def colored(text: str, color_code: str) -> str:
 def Local_ou_Remote():
     choix  = input('Bonjour, souhaitez-vous travailler en local (L) ou en Remote (R) ? :')
     if choix == 'L':
-        storage = LocalStorage("sever.json")
+        storage = LocalStorage("server.json")
     else : 
         storage = RemoteStorage()
 
