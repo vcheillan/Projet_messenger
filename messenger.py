@@ -8,11 +8,13 @@ from model import User
 from model import Channel
 from model import Message
 from remote_storage import RemoteStorage
+from local_storage import LocalStorage
+
 # Petite aide pour colorer le texte dans le terminal (codes ANSI)
 def colored(text: str, color_code: str) -> str:
     return f"\033[{color_code}m{text}\033[0m"
  
-storage = RemoteStorage()
+storage = Local_ou_Remote()
 #print(storage.get_channel())
 #storage.create_user('Valentin')   
 #storage.create_channel('Amis',[1,2])
@@ -57,13 +59,7 @@ def indice_g_vers_nom(id_channel):
     for group in storage.get_channel():
         if group.idg == id_channel:
             return group.name
-liste_id = [user.id for user in storage.get_users()]
 
-liste_idg = [group.idg for group in storage.get_channel()]
-
-liste_idm = [message.id for message in storage.get_message()]
-
-liste = [user.name for user in storage.get_users()]
 def clear_screen():
     os.system('cls' if os.name == 'nt' else 'clear')
 
@@ -284,5 +280,14 @@ def choix():
     else:
         print('Commande inconnue : ', choice)
         retour_menu()
+
+def Local_ou_Remote():
+    choix  = input('Bonjour, souhaitez-vous travailler en local (L) ou en Remote (R) ? :')
+    if choix == 'L':
+        storage = LocalStorage("sever.json")
+    else : 
+        storage = RemoteStorage()
+
+    return storage
 
 choix()

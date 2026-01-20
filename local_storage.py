@@ -3,9 +3,26 @@ from model import User
 from model import Channel
 from model import Message
 import json
+
+
+
 class LocalStorage: 
     def __init__(self, chemin): #crétion de la classe User qui contient tous les élements du dico LocalStroage
         self.chemin = chemin
+    
+    def listes_utiles(self):
+        server = self.load_server()
+        liste_id = [user.id for user in server['users']]
+
+        liste_idg = [group.idg for group in server['channels']]
+
+        liste_idm = [message.id for message in server[' channels']]
+
+        return [liste_id,liste_idg,liste_idm]
+    
+    def generer_id(self,L):
+        return len(L)+1
+
 
     def load_server(self):
         server = { 'users':[], 'channels' : [], 'messages' : []}
@@ -39,7 +56,8 @@ class LocalStorage:
         return self.load_server()['users']
     
     def create_user(self,name :str)-> int :
-        id = #
+        liste_id = self.listes_utilses()[0]
+        id = self.generer_id(liste_id)
         dico = self.load_server()
         dico['users'].append(User(name,id))
         return id
@@ -48,7 +66,8 @@ class LocalStorage:
         return self.load_server()['channels']
     
     def create_channel(self,name):
-        id_channel= #
+        liste_id = self.listes_utilses()[1]
+        id_channel = self.generer_id(liste_id)
         channel = Channel(name, id_channel, [])
         self.load_server()['channel'].append(channel)
         return id_channel
@@ -73,5 +92,7 @@ class LocalStorage:
                 return message.content
 
     def create_message(self,id_channel, content, sender_id):
+        liste_id = self.listes_utilses()[2]
+        id_message = self.generer_id(liste_id)
         self.load_server()['messages'].append(Message(id_channel, id_message,content,datetime.now().strftime),sender_id)
 
