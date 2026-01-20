@@ -7,16 +7,16 @@ import requests
 from model import User
 from model import Channel
 from model import Message
-from remote_storage import RemoteStorage
+from local_storage import LocalStorage
 # Petite aide pour colorer le texte dans le terminal (codes ANSI)
 def colored(text: str, color_code: str) -> str:
     return f"\033[{color_code}m{text}\033[0m"
  
-storage = RemoteStorage()
+storage = LocalStorage()
 #print(storage.get_channel())
 #storage.create_user('Valentin')   
 #storage.create_channel('Amis',[1,2])
-server = { 'users':[], 'channels' : [], 'messages' : []}
+server = storage.load_server()
 #print(storage.get_channel_message(10))
 #storage.create_message(10,'Bonjour Léonard', 8)
 
@@ -36,31 +36,6 @@ def print_logo():
     print(stats.center(width) + "\n")
     print('=== Bienvenue dans le service de messagerie ==='.center(width))
 
-with open("server.json", "r", encoding = "utf-8") as f: #Lecture du fichier uniquement 
-    server1 = json.load(f)
-for user in server1['users']: #conversion du server json en un server local utilisant les classes
-    server['users'].append(User(user['name'],user['id'])) 
-for group in server1['channels']:
-    server['channels'].append(Channel(group['name'], group['id'], group['member_ids']))
-for message in server1['messages']:
-    server['messages'].append(Message(message['channel'],message['id'],message['content'], message['reception_date'], message['sender_id']))
-#with open(RemoteStorage.get_users(), "r", encoding = "utf-8") as f: #Lecture du fichier uniquement 
-    #web1 = json.load(f)
-#print(web1)
-def save_server(): #sauvegarde du server
-     new_server = { 'users':[], 'channels' : [], 'messages' : []} #conversion inverse afin de changer les classes locales en des dictionnaires
-     for user in server['users']:
-         new_server['users'].append({'id' : user.id, 'name' : user.name})
-     for channel in server['channels']:
-         new_server['channels'].append({'id' : channel.idg, 'name' : channel.name, 'member_ids' : channel.members})
-     for message in server['messages']:
-         new_server['messages'].append({'id' : message.id, 
-                                        'reception_date' : message.time, 
-                                        'sender_id' : message.sender, 
-                                        'channel' : message.channel,
-                                        'content' : message.content})
-     with open("server.json","w", encoding = "utf-8") as f: #écriture du fichier --> modification 
-          json.dump(new_server, f, ensure_ascii=False, indent=2)
 
 def indice(nom : str): #convertit un nom d'utilisateur en indice utilisateur 
     for user in storage.get_users():

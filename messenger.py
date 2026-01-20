@@ -36,17 +36,8 @@ def print_logo():
     print(stats.center(width) + "\n")
     print('=== Bienvenue dans le service de messagerie ==='.center(width))
 
-with open("server.json", "r", encoding = "utf-8") as f: #Lecture du fichier uniquement 
-    server1 = json.load(f)
-for user in server1['users']: #conversion du server json en un server local utilisant les classes
-    server['users'].append(User(user['name'],user['id'])) 
-for group in server1['channels']:
-    server['channels'].append(Channel(group['name'], group['id'], group['member_ids']))
-for message in server1['messages']:
-    server['messages'].append(Message(message['channel'],message['id'],message['content'], message['reception_date'], message['sender_id']))
-#with open(RemoteStorage.get_users(), "r", encoding = "utf-8") as f: #Lecture du fichier uniquement 
-    #web1 = json.load(f)
-#print(web1)
+
+
 
 
 def indice(nom : str): #convertit un nom d'utilisateur en indice utilisateur 
