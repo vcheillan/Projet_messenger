@@ -13,7 +13,15 @@ from local_storage import LocalStorage
 # Petite aide pour colorer le texte dans le terminal (codes ANSI)
 def colored(text: str, color_code: str) -> str:
     return f"\033[{color_code}m{text}\033[0m"
- 
+
+def Local_ou_Remote():
+    choix  = input('Bonjour, souhaitez-vous travailler en local (L) ou en Remote (R) ? :')
+    if choix == 'L':
+        storage = LocalStorage("sever.json")
+    else : 
+        storage = RemoteStorage()
+
+    return storage
 storage = Local_ou_Remote()
 #print(storage.get_channel())
 #storage.create_user('Valentin')   
@@ -121,11 +129,11 @@ def ajout_plusieurs_utilisateurs():
      liste_noms = input('Names : ').split(',')
      liste_noms_corr = [ user.strip() for user in liste_noms]
      for nom in liste_noms_corr : 
-            id = generer_id(liste_id)
+            #id = generer_id(liste_id)
             #user = User(nom,id)
             storage.create_user(nom)
             #server['users'].append(user)
-            liste_id.append(id)
+            #liste_id.append(id)
             #save_server()
      
 def continuer_messagerie(groupe, user_name):
@@ -189,6 +197,7 @@ def ajout_groupe():
     utilisateurs_group = input( 'Liste des utilisateurs : ').split(',')
     user_corr = [ user.strip() for user in utilisateurs_group]
     N_ut = []
+    liste = [user.name for user in storage.get_users()]
     for user in user_corr:
          if user not in liste:
               N_ut.append(user)
@@ -281,13 +290,6 @@ def choix():
         print('Commande inconnue : ', choice)
         retour_menu()
 
-def Local_ou_Remote():
-    choix  = input('Bonjour, souhaitez-vous travailler en local (L) ou en Remote (R) ? :')
-    if choix == 'L':
-        storage = LocalStorage("sever.json")
-    else : 
-        storage = RemoteStorage()
 
-    return storage
 
 choix()
