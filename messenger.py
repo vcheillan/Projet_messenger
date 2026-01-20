@@ -117,12 +117,13 @@ def afficher_messages_groupes(): #affichage des messages d'un groupe sélectionn
 def ajout_utilisateur():
  #  clear_screen()
     nom = input( 'Name : ')
+    liste = [user.name for user in storage.get_users()]
     if nom in liste:
          print(f'utilisateur : {nom} est déja dans le serveur')
          redirection()
-    id = storage.create_user(nom)
+    storage.create_user(nom)
     #save_server()
-    liste_id.append(id)
+    #liste_id.append(id)
     
 def ajout_plusieurs_utilisateurs():
   #   clear_screen()
@@ -158,6 +159,7 @@ def ajout_groupe_et_messagerie_privés():
     nom1 = input ('Votre prénom : ') 
     nom2 = input( 'Personne avec qui vous voulez parler : ')
     N_ut = []
+    liste = [user.name for user in storage.get_users()]
     if nom2 not in liste:
         N_ut.append(nom2)
     if len(N_ut) == 1:
