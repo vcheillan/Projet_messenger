@@ -97,14 +97,6 @@
         45,
         42
       ]
-    },
-    {
-      "id": 18,
-      "name": "/opt/miniconda3/bin/python /Users/valpro/cours-info/ue12-mines-ap/TP/messenger/messenger.py",
-      "member_ids": [
-        42,
-        null
-      ]
     }
   ],
   "messages": [

@@ -90,9 +90,11 @@ class LocalStorage:
     
     def get_channel_message(self, id_channel)-> list[User]:
         server = self.load_server()
+        liste = []
         for message in server['messages']:
             if message.channel == id_channel:
-                return message.content
+                liste.append(message.content)
+        return liste
 
     def create_message(self,id_channel, content, sender_id):
         liste_id = self.listes_utilses()[2]
