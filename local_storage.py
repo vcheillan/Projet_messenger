@@ -16,7 +16,7 @@ class LocalStorage:
 
         liste_idg = [group.idg for group in server['channels']]
 
-        liste_idm = [message.id for message in server[' channels']]
+        liste_idm = [message.id for message in server['messages']]
 
         return [liste_id,liste_idg,liste_idm]
     
@@ -56,11 +56,11 @@ class LocalStorage:
         return self.load_server()['users']
     
     def create_user(self,name :str)-> int :
-        liste_id = self.listes_utilses()[0]
+        liste_id = self.listes_utiles()[0]
         id = self.generer_id(liste_id)
         dico = self.load_server()
         dico['users'].append(User(name,id))
-        self.save_server()
+        self.save_server(dico)
         return id
 
     def get_channel(self)-> list[User]:
@@ -71,7 +71,7 @@ class LocalStorage:
         id_channel = self.generer_id(liste_id)
         channel = Channel(name, id_channel, [])
         self.load_server()['channel'].append(channel)
-        self.save_server()
+        self.save_server(self.load_server())
         return id_channel
     
     def add_user_channel(self,user_id ,id_channel):
@@ -82,7 +82,7 @@ class LocalStorage:
         for channel in server ['channels']:
             if channel.idg == id_channel:
                 channel.members.append(User(name, user_id))
-        self.save_server()
+        self.save_server(server)
             
     
     def get_message(self)-> list[User]:
@@ -98,5 +98,5 @@ class LocalStorage:
         liste_id = self.listes_utilses()[2]
         id_message = self.generer_id(liste_id)
         self.load_server()['messages'].append(Message(id_channel, id_message,content,datetime.now().strftime),sender_id)
-        self.save_server()
+        self.save_server(self.load_server())
 

@@ -1,20 +1,15 @@
 from datetime import datetime
-import random 
-import json
 import os
 import shutil
-import requests
-from model import User
-from model import Channel
-from model import Message
 from remote_storage import RemoteStorage
 from local_storage import LocalStorage
+import argparse
 
 # Petite aide pour colorer le texte dans le terminal (codes ANSI)
 def colored(text: str, color_code: str) -> str:
     return f"\033[{color_code}m{text}\033[0m"
 
-def Local_ou_Remote():
+#def Local_ou_Remote():
     choix  = input('Bonjour, souhaitez-vous travailler en local (L) ou en Remote (R) ? :')
     if choix == 'L':
         storage = LocalStorage("server.json")
@@ -22,17 +17,29 @@ def Local_ou_Remote():
         storage = RemoteStorage()
 
     return storage
-storage = Local_ou_Remote()
+#storage = Local_ou_Remote()
 #print(storage.get_channel())
 #storage.create_user('Valentin')   
 #storage.create_channel('Amis',[1,2])
 server = { 'users':[], 'channels' : [], 'messages' : []}
 #print(storage.get_channel_message(10))
 #storage.create_message(10,'Bonjour Léonard', 8)
+parser = argparse.ArgumentParser(
+                    prog='Messenger',
+                    description='Description du service de messagerie',
+                    epilog='Vous êtes paumés et vous ne savez pas comment utiliser le service de messsagerie ?\n Vous êtes tombés au bon endroit !\n Le service vous permet d utiliser plusieurs focntions, en commençant par afficher des utilisateurs, en ajouter. Vous pouvez aussi parler à des utilsateurs en groupe ou en message privé')
 
-#print(storage.get_channel())
-#print(storage.get_message())
-#storage.add_user_channel(4,2)
+
+parser.add_argument('--remote', help = 'Nom URL')
+parser.add_argument('--local', help = 'Nom du fichier')
+args = parser.parse_args()
+
+if args.remote:
+    storage = RemoteStorage(args.remote)
+
+elif args.local:
+    storage = LocalStorage(args.local)
+
 def print_logo():
     try:
         from pyfiglet import figlet_format
@@ -141,7 +148,7 @@ def continuer_messagerie(groupe, user_name):
     choixd = input('Voulez-vous continuer à discuter ? (Oui/Non) :')
     print(choixd)
     if choixd == 'Oui':
-        for message in storage.get_channel_message(groupe.idg):
+        for message in storage.get_channel_message(groupe):
             print(colored(message.time, '1;36'), colored(indice_vers_nom(message.sender), '1;33')) #foncion couleur générée par l'IA, c'est uniquement pour l'esthétique
             print('')
             print(message.content)
@@ -149,7 +156,7 @@ def continuer_messagerie(groupe, user_name):
             print('')
         message = input('message :')
         #server['messages'].append()
-        storage.create_message(groupe.idg,message, indice(user_name))
+        storage.create_message(groupe,message, indice(user_name))
         continuer_messagerie(groupe,user_name)
     else:
         redirection()
