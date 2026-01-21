@@ -53,10 +53,6 @@ def print_logo():
     print(stats.center(width) + "\n")
     print('=== Bienvenue dans le service de messagerie ==='.center(width))
 
-
-
-
-
 def indice(nom : str): #convertit un nom d'utilisateur en indice utilisateur 
     for user in storage.get_users():
         if user.name==nom:
