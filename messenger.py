@@ -115,6 +115,7 @@ def afficher_messages_groupes(): #affichage des messages d'un groupe sélectionn
         print('')
         print(message.content)
         print('')
+    redirection()
 
             
 def ajout_utilisateur():
@@ -125,6 +126,7 @@ def ajout_utilisateur():
          print(f'utilisateur : {nom} est déja dans le serveur')
          redirection()
     storage.create_user(nom)
+    redirection()
     #save_server()
     #liste_id.append(id)
     
@@ -218,6 +220,8 @@ def ajout_groupe():
     id_channel = storage.create_channel(group_name)
     for name in user_corr:
         storage.add_user_channel(indice(name),id_channel)
+
+    redirection()
     #server['channels'].append(new_group)
     #save_server()  
 
@@ -294,7 +298,5 @@ def choix():
     else:
         print('Commande inconnue : ', choice)
         retour_menu()
-
-
 
 choix()

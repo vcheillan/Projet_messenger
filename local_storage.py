@@ -93,7 +93,7 @@ class LocalStorage:
         liste = []
         for message in server['messages']:
             if message.channel == id_channel:
-                liste.append(message.content)
+                liste.append(message)
         return liste
 
     def create_message(self,id_channel, content, sender_id):
