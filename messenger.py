@@ -231,10 +231,16 @@ def ecriture_message():
     if privé == 'Non':
         fuser_name = input('Votre prénom : ')
         print('Groupe(s) disponibles :')
+        L=[]
         for group in storage.get_channel():
-            for user in group.members:
-                if fuser_name == user['name']:
-                    print(group.idg,':' ,group.name)
+            if len(group.members) > 2:
+                for user in group.members:
+                    if indice(fuser_name) == user:
+                        L.append(user)
+                        print(group.idg,':' ,group.name)
+        if len(L) == 0:
+            print("Il n'existe pas de groupe dans lequel vous apparaissez")
+            ajout_groupe()
         group_name = input('Quel est le groupe choisi ? :')
         indice_groupe = indice_g(group_name)
         #idmes = generer_id(liste_idm)
