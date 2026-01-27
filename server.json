@@ -113,10 +113,9 @@
       "reception_date": "NAO",
       "sender_id": 41,
       "channel": 12,
-      "content": [
-        "Hi 👋",
-        "Piche"
-      ]
+      "content": 
+        "Hi 👋"
+      
     },
     {
       "id": 19,
