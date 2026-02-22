@@ -120,7 +120,7 @@ def afficher_messages_groupes(): #affichage des messages d'un groupe sélectionn
             
 def ajout_utilisateur():
  #  clear_screen()
-    nom = input( 'Name : ')
+    nom = input( 'Pseudo : ')
     liste = [user.name for user in storage.get_users()]
     if nom in liste:
          print(f'utilisateur : {nom} est déja dans le serveur')
@@ -132,15 +132,16 @@ def ajout_utilisateur():
     
 def ajout_plusieurs_utilisateurs():
   #   clear_screen()
-     liste_noms = input('Names : ').split(',')
-     liste_noms_corr = [ user.strip() for user in liste_noms]
-     for nom in liste_noms_corr : 
+    liste_noms = input('Pseudos (séparés par des virgules) : ').split(',')
+    liste_noms_corr = [ user.strip() for user in liste_noms]
+    for nom in liste_noms_corr : 
             #id = generer_id(liste_id)
             #user = User(nom,id)
             storage.create_user(nom)
             #server['users'].append(user)
             #liste_id.append(id)
             #save_server()
+    redirection()
      
 def continuer_messagerie(groupe, user_name):
     choixd = input('Voulez-vous continuer à discuter ? (Oui/Non) :')
@@ -199,9 +200,9 @@ def ajout_groupe_et_messagerie_privés():
     
 def ajout_groupe():
     #clear_screen()
-    group_name = input( 'Name : ')
+    group_name = input( 'Nom du groupe : ')
     #id_group = generer_id(liste_idg)
-    utilisateurs_group = input( 'Liste des utilisateurs : ').split(',')
+    utilisateurs_group = input( 'Liste des utilisateurs (pseudos séparés par des virgules) : ').split(',')
     user_corr = [ user.strip() for user in utilisateurs_group]
     N_ut = []
     liste = [user.name for user in storage.get_users()]
@@ -241,13 +242,13 @@ def ecriture_message():
         if len(L) == 0:
             print("Il n'existe pas de groupe dans lequel vous apparaissez")
             ajout_groupe()
-        group_name = input('Quel est le groupe choisi ? :')
+        group_name = input('Quel est le groupe choisi (nom du groupe) ? :')
         indice_groupe = indice_g(group_name)
         #idmes = generer_id(liste_idm)
         message = input('Discussion ouverte :' )
         #server['messages'].append(Message(indice_groupe,idmes, message,str(datetime.now().strftime("%d/%m/%Y %H:%M")),indice(fuser_name)))
         storage.create_message(indice_groupe,message,indice(fuser_name))
-        continuer_messagerie(group,fuser_name)
+        continuer_messagerie(indice_groupe,fuser_name)
     else :
         ajout_groupe_et_messagerie_privés()
 
@@ -262,44 +263,31 @@ def choix():
     choice = input('Sélectionnez une option : ')
     if choice == 'u':
         affiche_utilisateurs()
-        Bol = input('Voulez-vous continuer ? :')
-        if Bol == 'Oui':
-            redirection()
+        
         
     elif choice == 'S':
         return print('Sortie du service')
         
-    
-
+        
     elif choice == 'g':
         afficher_messages_groupes()
-        Bol = input('Voulez-vous continuer ? :')
-        if Bol == 'Oui':
-            redirection()
+        
         
     elif choice == 'au':
         ajout_utilisateur()
-        Bol = input('Voulez-vous continuer ? :')
-        if Bol == 'Oui':
-            redirection()
+        
 
     elif choice == 'apu':
          ajout_plusieurs_utilisateurs() 
-         Bol = input('Voulez-vous continuer ? :')
-         if Bol == 'Oui':
-            redirection()  
+          
         
     elif choice == 'ag':
         ajout_groupe()
-        Bol = input('Voulez-vous continuer ? :')
-        if Bol == 'Oui':
-            redirection()
+        
 
     elif choice == 'em':
         ecriture_message()
-        Bol = input('Voulez-vous continuer ? :')
-        if Bol == 'Oui':
-            redirection()  
+         
 
     else:
         print('Commande inconnue : ', choice)
