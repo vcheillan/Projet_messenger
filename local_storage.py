@@ -67,21 +67,19 @@ class LocalStorage:
         return self.load_server()['channels']
     
     def create_channel(self,name):
-        liste_id = self.listes_utilses()[1]
+        server = self.load_server()
+        liste_id = self.listes_utiles()[1]
         id_channel = self.generer_id(liste_id)
         channel = Channel(name, id_channel, [])
-        self.load_server()['channel'].append(channel)
-        self.save_server(self.load_server())
+        server['channels'].append(channel)
+        self.save_server(server)
         return id_channel
     
     def add_user_channel(self,user_id ,id_channel):
         server = self.load_server()
-        for user in server['users']:
-            if user.id == user_id:
-                name = user.name
         for channel in server ['channels']:
             if channel.idg == id_channel:
-                channel.members.append(User(name, user_id))
+                channel.members.append(user_id)
         self.save_server(server)
             
     
@@ -97,8 +95,10 @@ class LocalStorage:
         return liste
 
     def create_message(self,id_channel, content, sender_id):
-        liste_id = self.listes_utilses()[2]
+        server = self.load_server()
+        liste_id = self.listes_utiles()[2]
         id_message = self.generer_id(liste_id)
-        self.load_server()['messages'].append(Message(id_channel, id_message,content,datetime.now().strftime),sender_id)
-        self.save_server(self.load_server())
+        #message = {"id" : id_message,"reception_date" : datetime.now().strftime, "sender_id" :  sender_id, "channel" : id_channel, "content" :  }
+        server['messages'].append(Message(id_channel, id_message,content,datetime.now().strftime('%Y-%m-%d %H:%M:%S'),sender_id))
+        self.save_server(server)
 
