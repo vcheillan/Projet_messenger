@@ -71,6 +71,34 @@
     {
       "id": 18,
       "name": "Marin"
+    },
+    {
+      "id": 19,
+      "name": "Paul"
+    },
+    {
+      "id": 20,
+      "name": "Tcheilan"
+    },
+    {
+      "id": 21,
+      "name": "Maricelle"
+    },
+    {
+      "id": 22,
+      "name": "Jdo"
+    },
+    {
+      "id": 23,
+      "name": "TestUser"
+    },
+    {
+      "id": 24,
+      "name": "ChannelUser"
+    },
+    {
+      "id": 25,
+      "name": "TestUser"
     }
   ],
   "channels": [
@@ -79,7 +107,8 @@
       "name": "Town square",
       "member_ids": [
         41,
-        23
+        23,
+        24
       ]
     },
     {
@@ -87,7 +116,8 @@
       "name": "Amis",
       "member_ids": [
         43,
-        42
+        42,
+        25
       ]
     },
     {
@@ -137,6 +167,39 @@
         42,
         13,
         11
+      ]
+    },
+    {
+      "id": 9,
+      "name": "Anniversaire",
+      "member_ids": [
+        19,
+        42,
+        11
+      ]
+    },
+    {
+      "id": 10,
+      "name": "Discussion",
+      "member_ids": []
+    },
+    {
+      "id": 11,
+      "name": "TestChannel",
+      "member_ids": []
+    },
+    {
+      "id": 12,
+      "name": "ChannelForUser",
+      "member_ids": [
+        24
+      ]
+    },
+    {
+      "id": 13,
+      "name": "TestChannel",
+      "member_ids": [
+        25
       ]
     }
   ],
@@ -294,6 +357,27 @@
       "sender_id": 42,
       "channel": 8,
       "content": "Ca va ?"
+    },
+    {
+      "id": 23,
+      "reception_date": "2026-02-28 12:50:33",
+      "sender_id": 19,
+      "channel": 10,
+      "content": "Hello tcheilan"
+    },
+    {
+      "id": 24,
+      "reception_date": "2026-02-28 12:51:50",
+      "sender_id": 42,
+      "channel": 9,
+      "content": "Bienvenue dans le groupe"
+    },
+    {
+      "id": 25,
+      "reception_date": "2026-02-28 13:00:15",
+      "sender_id": 25,
+      "channel": 13,
+      "content": "Test."
     }
   ]
 }

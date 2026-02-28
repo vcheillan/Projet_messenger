@@ -271,7 +271,7 @@ def ecriture_message():
         print(colored('\nVos groupes :', '1;36'))
         L = []
         for group in storage.get_channel():
-            if len(group.members) > 3:
+            if len(group.members) >= 3:
                 for user in group.members:
                     if indice(fuser_name) == user:
                         L.append(user)
